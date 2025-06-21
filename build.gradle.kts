@@ -14,18 +14,23 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2023.2.2")
+    version.set("2024.2.1")
     type.set("CL") // Target IDE Platform
 
-    plugins.set(listOf("com.intellij.clion", "cidr-base-plugin", "c-plugin"))
+    plugins.set(listOf(
+        "com.intellij.clion",
+        "com.intellij.cidr.base",
+        //"com.intellij.cidr.lang",
+        "c-plugin"
+    ))
 
 }
 
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "11"

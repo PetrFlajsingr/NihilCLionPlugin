@@ -7,19 +7,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d9ec5d5-f6b4-4bf3-9596-ed784e12e283" name="Changes" comment="Change version&#10;Fix group name&#10;update CLion version&#10;Fix project name">
-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/git_toolbox_blame.xml" afterDir="false" />
+    <list default="true" id="0d9ec5d5-f6b4-4bf3-9596-ed784e12e283" name="Changes" comment="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/base_actions/RunToolAction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/tool_actions/RunNihilLogViewerAction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/tool_actions/RunRenderDocAction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/tool_actions/RunTracyAction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/logviewer.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/renderdoc.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/tracy.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/activities/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/activities/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/debugger/lldb/LLDBDebuggerHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/debugger/lldb/LLDBDebuggerHandler.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/debugger_actions/IgnoreBreakpointInstructionAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/debugger_actions/IgnoreBreakpointInstructionAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/speculo_actions/PauseResumeSpeculoAction.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/status_bar/NihilStatusBarWidgetFactory.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/status_bar/SpeculoStatusBarWidget.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/assert_actions/InsertNotImplementedErrorAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/assert_actions/InsertNotImplementedErrorAction.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,6 +56,19 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;PetrFlajsingr&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/PetrFlajsingr/pf_clion_plugin.git&quot;,
+    &quot;accountId&quot;: &quot;d3949043-fadb-4336-88b9-2c7175dd1332&quot;
+  }
+}</component>
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\xflajs00\.gradle\wrapper\dists\gradle-7.5.1-bin\7jzzequgds1hbszbhq3npc5ng\gradle-7.5.1" javaHome="C:\Users\xflajs00\.jdks\corretto-16.0.2" gradleVersion="7.5.1" />
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />
@@ -68,6 +79,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -77,24 +92,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build pf_assert_integration.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Run Plugin.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.pf_assert_integration [assemble].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.pf_assert_integration [setupDependencies].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/xflajs00/IdeaProjects/pf_assert_integration&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build pf_assert_integration.executor": "Run",
+    "Gradle.Run Plugin.executor": "Run",
+    "Gradle.pf_assert_integration [assemble].executor": "Debug",
+    "Gradle.pf_assert_integration [setupDependencies].executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/xflajs00/IdeaProjects/pf_assert_integration",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateKotlinClassDialog.RecentsKey">
       <recent name="cz.petrflajsingr.assert_integration" />
@@ -106,10 +121,11 @@
       <recent name="cz.petrflajsingr.clion_plugin.base_actions" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="cz.petrflajsingr.nihil_clion_plugin.tool_actions" />
       <recent name="cz.petrflajsingr.clion_plugin.assert_actions" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Run Plugin">
+  <component name="RunManager" selected="Gradle.pf_assert_integration [assemble]">
     <configuration name="pf_assert_integration [assemble]" type="GradleRunConfiguration" factoryName="Gradle" nameIsGenerated="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -128,8 +144,11 @@
       </ExternalSystemSettings>
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
     <configuration name="build.gradle.kts" type="KotlinStandaloneScriptRunConfigurationType" temporary="true" nameIsGenerated="true">
@@ -142,13 +161,15 @@
     <list>
       <item itemvalue="Gradle.pf_assert_integration [assemble]" />
       <item itemvalue="Gradle.Run Plugin" />
-      <item itemvalue="Kotlin script (Beta).build.gradle.kts" />
+      <item itemvalue="Kotlin script.build.gradle.kts" />
     </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Kotlin script (Beta).build.gradle.kts" />
-      </list>
-    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -298,7 +319,15 @@
       <option name="project" value="LOCAL" />
       <updated>1697317790235</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion">
+      <option name="closed" value="true" />
+      <created>1750511203129</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1750511203129</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -336,6 +365,7 @@
     <MESSAGE value="Add Speculo status to status bar" />
     <MESSAGE value="Refactoring to properties&#10;Add not implemented error item&#10;Rename package&#10;Update description" />
     <MESSAGE value="Change version&#10;Fix group name&#10;update CLion version&#10;Fix project name" />
-    <option name="LAST_COMMIT_MESSAGE" value="Change version&#10;Fix group name&#10;update CLion version&#10;Fix project name" />
+    <MESSAGE value="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion" />
   </component>
 </project>

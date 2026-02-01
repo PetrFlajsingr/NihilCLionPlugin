@@ -24,7 +24,6 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="cz.petrflajsingr.nihil_clion_plugin.activities.MainActivity"/>
-        <statusBarWidgetFactory id="SpeculoSB" implementation="cz.petrflajsingr.nihil_clion_plugin.status_bar.NihilStatusBarWidgetFactory"/>
     </extensions>
     <actions>
         <group id="cz.petrflajsingr.nihil_clion_plugin.MainMenuActionGroup"
@@ -40,17 +39,17 @@
             <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureAction"
                     class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureAction"
                     text="Insert ensure" description="Insert ensure with generated random ID">
-                <keyboard-shortcut keymap="$default" first-keystroke="alt shift q"/>
+<!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift q"/>-->
             </action>
             <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertAssertAction"
                     class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertAssertAction"
                     text="Insert assert" description="Insert assert with a unique ID">
-                <keyboard-shortcut keymap="$default" first-keystroke="alt shift w"/>
+<!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift w"/>-->
             </action>
             <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertVerifyAction"
                     class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertVerifyAction"
                     text="Insert verify" description="Insert verify with a unique ID">
-                <keyboard-shortcut keymap="$default" first-keystroke="alt shift e"/>
+<!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift e"/>-->
             </action>
             <separator/>
             <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureParanoidAction"
@@ -99,17 +98,39 @@
                     class="cz.petrflajsingr.nihil_clion_plugin.rtti_actions.InsertRTTIID" text="Insert random RTTI ID"
                     description="Insert random RTTI ID">
             </action>
-            <separator/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.debugger_actions.IgnoreBreakpointInstructionAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.debugger_actions.IgnoreBreakpointInstructionAction" text="Ignore current debug break"
-                    description="Ignore current debug break by removing its instruction">
-            </action>
-            <separator/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.speculo_actions.PauseResumeSpeculoAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.speculo_actions.PauseResumeSpeculoAction" text="Pause/resume Speculo"
-                    description="Pause or resume Speculo execution during building">
-            </action>
-
+<!--            <separator/>-->
+<!--            <action id="cz.petrflajsingr.nihil_clion_plugin.debugger_actions.IgnoreBreakpointInstructionAction"-->
+<!--                    class="cz.petrflajsingr.nihil_clion_plugin.debugger_actions.IgnoreBreakpointInstructionAction" text="Ignore current debug break"-->
+<!--                    description="Ignore current debug break by removing its instruction">-->
+<!--            </action>-->
         </group>
+
+
+        <!-- Toolbar group -->
+        <group id="Nihil.RunToolbarGroup">
+            <add-to-group
+                    group-id="RunToolbarMainActionGroup"
+                    anchor="after"
+                    relative-to-action="Stop"/>
+
+            <action
+                    id="Nihil.RunTracy"
+                    class="cz.petrflajsingr.nihil_clion_plugin.tool_actions.RunTracyAction"
+                    text="Tracy"
+                    description="Open Tracy Profiler"/>
+
+            <action
+                    id="Nihil.RunRenderDoc"
+                    class="cz.petrflajsingr.nihil_clion_plugin.tool_actions.RunRenderDocAction"
+                    text="RenderDoc"
+                    description="Open RenderDoc"/>
+
+            <action
+                    id="Nihil.RunLogViewer"
+                    class="cz.petrflajsingr.nihil_clion_plugin.tool_actions.RunNihilLogViewerAction"
+                    text="Log Viewer"
+                    description="Open Nihil Log Viewer"/>
+        </group>
+
     </actions>
 </idea-plugin>

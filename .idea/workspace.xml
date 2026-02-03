@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AnalysisUIOptions">
-    <option name="ANALYZE_INJECTED_CODE" value="false" />
-  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d9ec5d5-f6b4-4bf3-9596-ed784e12e283" name="Changes" comment="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/base_actions/RunToolAction.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/tool_actions/RunNihilLogViewerAction.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/tool_actions/RunRenderDocAction.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/tool_actions/RunTracyAction.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/logviewer.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/renderdoc.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/tracy.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/assert_actions/InsertNotImplementedErrorAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/petrflajsingr/nihil_clion_plugin/assert_actions/InsertNotImplementedErrorAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" afterDir="false" />
-    </list>
+    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,110 +19,71 @@
     <system id="GRADLE">
       <state>
         <task path="$PROJECT_DIR$">
-          <activation>
-            <after_sync>
-              <task name="setupDependencies" />
-            </after_sync>
-          </activation>
+          <activation />
         </task>
-        <projects_view />
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="nihil_utils_plugin" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="nihil_utils_plugin" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="nihil_utils_plugin" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="nihil_utils_plugin" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build setup" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
       </state>
     </system>
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Kotlin Interface" />
-        <option value="Kotlin File" />
-        <option value="Kotlin Class" />
-      </list>
-    </option>
-  </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;PetrFlajsingr&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/PetrFlajsingr/pf_clion_plugin.git&quot;,
-    &quot;accountId&quot;: &quot;d3949043-fadb-4336-88b9-2c7175dd1332&quot;
-  }
-}</component>
-  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\xflajs00\.gradle\wrapper\dists\gradle-7.5.1-bin\7jzzequgds1hbszbhq3npc5ng\gradle-7.5.1" javaHome="C:\Users\xflajs00\.jdks\corretto-16.0.2" gradleVersion="7.5.1" />
-  <component name="LogFilters">
-    <option name="FILTER_ERRORS" value="false" />
-    <option name="FILTER_WARNINGS" value="false" />
-    <option name="FILTER_INFO" value="true" />
-    <option name="FILTER_DEBUG" value="true" />
-    <option name="CUSTOM_FILTER" />
-  </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
-  <component name="McpProjectServerCommands">
-    <commands />
-    <urls />
-  </component>
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\xflajs00\.gradle\wrapper\dists\gradle-9.0.0-bin\d6wjpkvcgsg3oed0qlfss3wgl\gradle-9.0.0" javaHome="C:\Program Files\Java\jdk-17" gradleVersion="9.0.0" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="2IpAvZoCNNzY04Bfjl2akGMvtpT" />
+  <component name="ProjectId" id="399nySkbFrOoC7WhqgCETonFE8y" />
   <component name="ProjectViewState">
-    <option name="autoscrollToSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build pf_assert_integration.executor": "Run",
-    "Gradle.Run Plugin.executor": "Run",
-    "Gradle.pf_assert_integration [assemble].executor": "Debug",
-    "Gradle.pf_assert_integration [setupDependencies].executor": "Run",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/xflajs00/IdeaProjects/pf_assert_integration",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build pf_assert_integration.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.pf_assert_integration [build].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/xflajs00/IdeaProjects/pf_assert_integration&quot;
   }
-}]]></component>
-  <component name="RecentsManager">
-    <key name="CreateKotlinClassDialog.RecentsKey">
-      <recent name="cz.petrflajsingr.assert_integration" />
-      <recent name="cz.petrflajsingr.assert_integration.pf_assert_integration" />
-    </key>
-    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
-      <recent name="cz.petrflajsingr.clion_plugin.wrap_actions" />
-      <recent name="cz.petrflajsingr.clion_plugin.assert_utils" />
-      <recent name="cz.petrflajsingr.clion_plugin.base_actions" />
-    </key>
-    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
-      <recent name="cz.petrflajsingr.nihil_clion_plugin.tool_actions" />
-      <recent name="cz.petrflajsingr.clion_plugin.assert_actions" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Gradle.pf_assert_integration [assemble]">
-    <configuration name="pf_assert_integration [assemble]" type="GradleRunConfiguration" factoryName="Gradle" nameIsGenerated="true">
+}</component>
+  <component name="RunManager" selected="Gradle.Run IDE with Plugin">
+    <configuration name="pf_assert_integration [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
+        <option name="scriptParameters" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
-            <option value="assemble" />
+            <option value="build" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -151,18 +97,77 @@
       <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
-    <configuration name="build.gradle.kts" type="KotlinStandaloneScriptRunConfigurationType" temporary="true" nameIsGenerated="true">
+    <configuration default="true" type="JetRunConfigurationType">
       <module name="pf_assert_integration" />
-      <option name="filePath" value="$PROJECT_DIR$/build.gradle.kts" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <list>
-      <item itemvalue="Gradle.pf_assert_integration [assemble]" />
-      <item itemvalue="Gradle.Run Plugin" />
-      <item itemvalue="Kotlin script.build.gradle.kts" />
-    </list>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="pf_assert_integration" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="pf_assert_integration" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="ccruntests" factoryName="Run Study Tests">
+      <module name="pf_assert_integration" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <option name="studyTest" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.pf_assert_integration [build]" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -171,201 +176,14 @@
       </set>
     </attachedChunks>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0d9ec5d5-f6b4-4bf3-9596-ed784e12e283" name="Changes" comment="" />
-      <created>1670868381671</created>
+      <changelist id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="" />
+      <created>1770117407204</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1670868381671</updated>
+      <updated>1770117407204</updated>
     </task>
-    <task id="LOCAL-00001" summary="Add assert actions">
-      <created>1670955881605</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1670955881605</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Remove redundant package name">
-      <created>1670956157009</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1670956157009</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Add prefix to generated macros">
-      <created>1670956815254</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1670956815254</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Change assert ID to `AssertID` type">
-      <created>1671272432846</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1671272432846</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Add pragma optimize wrap">
-      <created>1671272931767</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1671272931767</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Rename package to `clion_plugin`">
-      <created>1671272988420</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1671272988420</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Move actions to appropriate packages">
-      <created>1671273131283</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1671273131283</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Add insert UUID action">
-      <created>1674993824768</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1674993824768</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Change assert id generation">
-      <created>1676162016136</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1676162016136</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Add paranoid asserts&#10;Update required versions">
-      <created>1685376779161</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1685376779161</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Add action for random RTTI id generation">
-      <created>1685897276038</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1685897276038</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Fix function mismatch">
-      <created>1685897384354</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1685897384354</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Add functionality to replace current `int3` instruction with `nop`">
-      <created>1686899587446</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1686899587446</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Add an action to pause/resume Speculo">
-      <option name="closed" value="true" />
-      <created>1690050530687</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1690050530687</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Make actions dumb aware">
-      <option name="closed" value="true" />
-      <created>1690064504254</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1690064504254</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Use better default for log category warnings and errors">
-      <option name="closed" value="true" />
-      <created>1690066821338</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1690066821338</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Add Speculo status to status bar">
-      <option name="closed" value="true" />
-      <created>1690994438880</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1690994438880</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Refactoring to properties&#10;Add not implemented error item&#10;Rename package&#10;Update description">
-      <option name="closed" value="true" />
-      <created>1696356611767</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1696356611767</updated>
-    </task>
-    <task id="LOCAL-00019" summary="Change version&#10;Fix group name&#10;update CLion version&#10;Fix project name">
-      <option name="closed" value="true" />
-      <created>1697317790235</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1697317790235</updated>
-    </task>
-    <task id="LOCAL-00020" summary="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion">
-      <option name="closed" value="true" />
-      <created>1750511203129</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1750511203129</updated>
-    </task>
-    <option name="localTasksCounter" value="21" />
     <servers />
-  </component>
-  <component name="UnknownFeatures">
-    <option featureType="dependencySupport" implementationName="executable:docker" />
-    <option featureType="dependencySupport" implementationName="executable:kubectl" />
-  </component>
-  <component name="Vcs.Log.History.Properties">
-    <option name="COLUMN_ID_ORDER">
-      <list>
-        <option value="Default.Root" />
-        <option value="Default.Author" />
-        <option value="Default.Date" />
-        <option value="Default.Subject" />
-        <option value="Space.CommitStatus" />
-      </list>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add assert actions" />
-    <MESSAGE value="Remove redundant package name" />
-    <MESSAGE value="Add prefix to generated macros" />
-    <MESSAGE value="Change assert ID to `AssertID` type" />
-    <MESSAGE value="Add pragma optimize wrap" />
-    <MESSAGE value="Rename package to `clion_plugin`" />
-    <MESSAGE value="Move actions to appropriate packages" />
-    <MESSAGE value="Add insert UUID action" />
-    <MESSAGE value="Change assert id generation" />
-    <MESSAGE value="Add paranoid asserts&#10;Update required versions" />
-    <MESSAGE value="Add action for random RTTI id generation" />
-    <MESSAGE value="Fix function mismatch" />
-    <MESSAGE value="Add functionality to replace current `int3` instruction with `nop`" />
-    <MESSAGE value="Add an action to pause/resume Speculo" />
-    <MESSAGE value="Make actions dumb aware" />
-    <MESSAGE value="Use better default for log category warnings and errors" />
-    <MESSAGE value="Add Speculo status to status bar" />
-    <MESSAGE value="Refactoring to properties&#10;Add not implemented error item&#10;Rename package&#10;Update description" />
-    <MESSAGE value="Change version&#10;Fix group name&#10;update CLion version&#10;Fix project name" />
-    <MESSAGE value="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove retired Speculo functionality&#10;Disable debugger related functionality due to them not working in the new CLion" />
   </component>
 </project>

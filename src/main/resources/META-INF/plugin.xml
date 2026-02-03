@@ -1,11 +1,11 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>cz.petrflajsingr.nihil_clion_plugin</id>
+    <id>cz.nihil_engine.nihil_utils_plugin</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Nihil CLion utils</name>
+    <name>Nihil CLion Utils</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="flajsingr@gmail.com" url="https://github.com/PetrFlajsingr">PetrFlajsingr</vendor>
@@ -18,91 +18,95 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.clion</depends>
     <depends>com.intellij.modules.xdebugger</depends>
+    <depends>com.intellij.modules.cpp-plugin-capable</depends>
+    <depends>com.intellij.modules.run.targets</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="cz.petrflajsingr.nihil_clion_plugin.activities.MainActivity"/>
+        <postStartupActivity implementation="cz.nihil_engine.nihil_utils_plugin.activities.MainActivity"/>
     </extensions>
     <actions>
-        <group id="cz.petrflajsingr.nihil_clion_plugin.MainMenuActionGroup"
-               class="cz.petrflajsingr.nihil_clion_plugin.MainMenuActionGroup"
+        <group id="cz.nihil_engine.nihil_utils_plugin.MainMenuActionGroup"
+               class="cz.nihil_engine.nihil_utils_plugin.MainMenuActionGroup"
                text="NihilEngine" description="Actions for generating asserts and their IDs"
-                popup="true">
+               popup="true">
 
             <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertHexIdAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertHexIdAction" text="Insert random ID"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertHexIdAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertHexIdAction" text="Insert random ID"
                     description="Insert hex int ID used for pf asserts">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertEnsureAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertEnsureAction"
                     text="Insert ensure" description="Insert ensure with generated random ID">
-<!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift q"/>-->
+                <!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift q"/>-->
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertAssertAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertAssertAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertAssertAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertAssertAction"
                     text="Insert assert" description="Insert assert with a unique ID">
-<!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift w"/>-->
+                <!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift w"/>-->
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertVerifyAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertVerifyAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertVerifyAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertVerifyAction"
                     text="Insert verify" description="Insert verify with a unique ID">
-<!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift e"/>-->
+                <!--                <keyboard-shortcut keymap="$default" first-keystroke="alt shift e"/>-->
             </action>
             <separator/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureParanoidAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertEnsureParanoidAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertEnsureParanoidAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertEnsureParanoidAction"
                     text="Insert paranoid ensure" description="Insert paranoid ensure with generated random ID">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertAssertParanoidAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertAssertParanoidAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertAssertParanoidAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertAssertParanoidAction"
                     text="Insert paranoid assert" description="Insert paranoid assert with a unique ID">
             </action>
             <separator/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertDbgWarnAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertDbgWarnAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertDbgWarnAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertDbgWarnAction"
                     text="Insert debug warn" description="Insert debug warning with a unique ID">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertDbgErrorAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertDbgErrorAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertDbgErrorAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertDbgErrorAction"
                     text="Insert debug error" description="Insert debug error with a unique ID">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertWarnAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertWarnAction" text="Insert warning"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertWarnAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertWarnAction" text="Insert warning"
                     description="Insert warning with a unique ID">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertErrorAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertErrorAction" text="Insert error"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertErrorAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertErrorAction" text="Insert error"
                     description="Insert error with a unique ID">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertNotImplementedErrorAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertNotImplementedErrorAction" text="Insert not implemented error"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertNotImplementedErrorAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertNotImplementedErrorAction" text="Insert not implemented error"
                     description="Insert error with a unique ID marking the function unimplemented">
             </action>
             <separator/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertStaticAssertAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.assert_actions.InsertStaticAssertAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertStaticAssertAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.assert_actions.InsertStaticAssertAction"
                     text="Insert static assert" description="Insert static assert with a unique ID">
             </action>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.wrap_actions.WrapUnoptimizePragmaAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.wrap_actions.WrapUnoptimizePragmaAction"
+            <action id="cz.nihil_engine.nihil_utils_plugin.wrap_actions.WrapUnoptimizePragmaAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.wrap_actions.WrapUnoptimizePragmaAction"
                     text="Disable optimization for selection"
                     description="Wrap currently selected text in pragma optimize"/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.uuid_actions.InsertUUIDAction"
-                    class="cz.petrflajsingr.nihil_clion_plugin.uuid_actions.InsertUUIDAction" text="Insert random UUID"
+            <action id="cz.nihil_engine.nihil_utils_plugin.uuid_actions.InsertUUIDAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.uuid_actions.InsertUUIDAction" text="Insert random UUID"
                     description="Inserts a random UUID at current cursor location"/>
             <separator/>
-            <action id="cz.petrflajsingr.nihil_clion_plugin.rtti_actions.InsertRTTIID"
-                    class="cz.petrflajsingr.nihil_clion_plugin.rtti_actions.InsertRTTIID" text="Insert random RTTI ID"
+            <action id="cz.nihil_engine.nihil_utils_plugin.rtti_actions.InsertRTTIID"
+                    class="cz.nihil_engine.nihil_utils_plugin.rtti_actions.InsertRTTIID" text="Insert random RTTI ID"
                     description="Insert random RTTI ID">
             </action>
-<!--            <separator/>-->
-<!--            <action id="cz.petrflajsingr.nihil_clion_plugin.debugger_actions.IgnoreBreakpointInstructionAction"-->
-<!--                    class="cz.petrflajsingr.nihil_clion_plugin.debugger_actions.IgnoreBreakpointInstructionAction" text="Ignore current debug break"-->
-<!--                    description="Ignore current debug break by removing its instruction">-->
-<!--            </action>-->
+            <!--            <separator/>-->
+            <!--            <action id="cz.nihil_engine.nihil_utils_plugin.debugger_actions.IgnoreBreakpointInstructionAction"-->
+            <!--                    class="cz.nihil_engine.nihil_utils_plugin.debugger_actions.IgnoreBreakpointInstructionAction" text="Ignore current debug break"-->
+            <!--                    description="Ignore current debug break by removing its instruction">-->
+            <!--            </action>-->
         </group>
 
 
@@ -115,19 +119,19 @@
 
             <action
                     id="Nihil.RunTracy"
-                    class="cz.petrflajsingr.nihil_clion_plugin.tool_actions.RunTracyAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunTracyAction"
                     text="Tracy"
                     description="Open Tracy Profiler"/>
 
             <action
                     id="Nihil.RunRenderDoc"
-                    class="cz.petrflajsingr.nihil_clion_plugin.tool_actions.RunRenderDocAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunRenderDocAction"
                     text="RenderDoc"
                     description="Open RenderDoc"/>
 
             <action
                     id="Nihil.RunLogViewer"
-                    class="cz.petrflajsingr.nihil_clion_plugin.tool_actions.RunNihilLogViewerAction"
+                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunNihilLogViewerAction"
                     text="Log Viewer"
                     description="Open Nihil Log Viewer"/>
         </group>

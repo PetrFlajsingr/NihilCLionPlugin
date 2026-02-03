@@ -1,1 +1,1 @@
-rootProject.name = "nihil_engine_utils"
+rootProject.name = "nihil_utils_plugin"

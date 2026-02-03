@@ -15,7 +15,9 @@ abstract class RunToolAction(
 
     protected abstract val toolArg: String
 
-    protected val extraArgs: List<String> = listOf()
+    protected open fun getExtraArgs(e: AnActionEvent): List<String> {
+        return listOf()
+    }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
@@ -25,7 +27,7 @@ abstract class RunToolAction(
             "python",
             "tools/tool_runner.py",
             toolArg,
-            *extraArgs.toTypedArray(),
+            *getExtraArgs(e).toTypedArray(),
         )
             .directory(File(basePath))
             .start()

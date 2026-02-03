@@ -1,9 +1,9 @@
 package cz.nihil_engine.nihil_utils_plugin.activities
 
-import com.intellij.openapi.application.ApplicationManager
+//import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.openapi.util.Disposer
+//import com.intellij.openapi.util.Disposer
 //import com.intellij.xdebugger.XDebugProcess
 //import com.intellij.xdebugger.XDebuggerManager
 //import com.intellij.xdebugger.XDebuggerManagerListener

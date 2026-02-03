@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="" />
+    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Update to newer plugin structure&#10;Rename package&#10;Add fetching of current config data to open renderdoc with the correct configuration">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/activities/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/activities/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunRenderDocAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunRenderDocAction.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,7 +57,26 @@
       </state>
     </system>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "PetrFlajsingr"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/PetrFlajsingr/pf_clion_plugin.git",
+    "accountId": "05121756-df5d-4fa4-9ba7-5d81827a1824"
+  }
+}]]></component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\xflajs00\.gradle\wrapper\dists\gradle-9.0.0-bin\d6wjpkvcgsg3oed0qlfss3wgl\gradle-9.0.0" javaHome="C:\Program Files\Java\jdk-17" gradleVersion="9.0.0" />
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -61,17 +85,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build pf_assert_integration.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.pf_assert_integration [build].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/xflajs00/IdeaProjects/pf_assert_integration&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build pf_assert_integration.executor": "Run",
+    "Gradle.Run IDE with Plugin.executor": "Run",
+    "Gradle.pf_assert_integration [assemble].executor": "Run",
+    "Gradle.pf_assert_integration [build].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/xflajs00/IdeaProjects/pf_assert_integration"
   }
-}</component>
-  <component name="RunManager" selected="Gradle.Run IDE with Plugin">
+}]]></component>
+  <component name="RunManager" selected="Gradle.pf_assert_integration [assemble]">
+    <configuration name="pf_assert_integration [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="assemble" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
     <configuration name="pf_assert_integration [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -165,6 +219,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.pf_assert_integration [assemble]" />
         <item itemvalue="Gradle.pf_assert_integration [build]" />
       </list>
     </recent_temporary>
@@ -184,6 +239,19 @@
       <option name="presentableId" value="Default" />
       <updated>1770117407204</updated>
     </task>
+    <task id="LOCAL-00001" summary="Update to newer plugin structure&#10;Rename package&#10;Add fetching of current config data to open renderdoc with the correct configuration">
+      <option name="closed" value="true" />
+      <created>1770118851523</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1770118851523</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Update to newer plugin structure&#10;Rename package&#10;Add fetching of current config data to open renderdoc with the correct configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update to newer plugin structure&#10;Rename package&#10;Add fetching of current config data to open renderdoc with the correct configuration" />
   </component>
 </project>

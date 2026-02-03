@@ -1,6 +1,5 @@
 package cz.nihil_engine.nihil_utils_plugin.tool_actions
 
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.IconLoader
@@ -19,27 +18,14 @@ class RunRenderDocAction : RunToolAction(
     override val toolArg: String
         get() = "renderdoc"
 
-    override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project ?: return
-        val basePath = project.basePath ?: return
-
+    override fun getExtraArgs(e: AnActionEvent): List<String> {
         var capPath = ""
         RunConfigExtractor.extract(e.project!!)?.let {
             capPath = RenderDocCapGenerator.generate(it).path
         }
-
-
-        val pb = ProcessBuilder(
-            "python",
-            "tools/tool_runner.py",
-            toolArg,
-            *extraArgs.toTypedArray(),
-            capPath,
-        ).directory(File(basePath))
-
-        log.info("Launching process with args: ${pb.command().joinToString(" ")}")
-
-        pb.start()
-
+        if (capPath.isNotEmpty()) {
+            return listOf(capPath)
+        }
+        return listOf()
     }
 }

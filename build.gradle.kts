@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "cz.nihil_engine.utils_plugin"
-version = "1.0-SNAPSHOT"
+version = "2.0"
 
 repositories {
     mavenCentral()

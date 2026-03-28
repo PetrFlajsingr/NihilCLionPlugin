@@ -4,24 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Refactoring">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/RunConfigTargetResolver.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfig.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigParser.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigService.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsExecutionListener.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsToolWindowFactory.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Add a config and UI for target specific program arg configuration">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanelBuilder.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/ShowNihilArgsPopupAction.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertAssertParanoidAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertAssertParanoidAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertOrOverwriteTextAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertOrOverwriteTextAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertTextAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertTextAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/WrapSelectionAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/WrapSelectionAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/config/RunConfigExtractor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/config/RunConfigExtractor.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/rtti_actions/InsertRTTIID.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/rtti_actions/InsertRTTIID.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunRenderDocAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunRenderDocAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfig.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigParser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigParser.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsExecutionListener.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsExecutionListener.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -130,7 +122,7 @@
       <recent name="cz.nihil_engine.nihil_utils_plugin.args" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Run IDE with Plugin">
+  <component name="RunManager" selected="Gradle.pf_assert_integration [assemble]">
     <configuration name="pf_assert_integration [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -249,8 +241,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.pf_assert_integration [build]" />
         <item itemvalue="Gradle.pf_assert_integration [assemble]" />
+        <item itemvalue="Gradle.pf_assert_integration [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -285,12 +277,21 @@
       <option name="project" value="LOCAL" />
       <updated>1770126235644</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add a config and UI for target specific program arg configuration">
+      <option name="closed" value="true" />
+      <created>1774726620750</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1774726620750</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Update to newer plugin structure&#10;Rename package&#10;Add fetching of current config data to open renderdoc with the correct configuration" />
     <MESSAGE value="Refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
+    <MESSAGE value="Add a config and UI for target specific program arg configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add a config and UI for target specific program arg configuration" />
   </component>
 </project>

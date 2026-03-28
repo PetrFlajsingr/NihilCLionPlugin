@@ -4,6 +4,8 @@ import java.io.File
 
 /**
  * Minimal TOML parser for the nihil_args.toml schema.
+ * Handles only what we need: tables, strings, booleans, and string arrays.
+ * No external dependencies required.
  */
 object NihilArgsConfigParser {
 
@@ -43,14 +45,11 @@ object NihilArgsConfigParser {
                 .map { it.trim().removeSurrounding("\"") }
                 .filter { it.isNotEmpty() }
         }
-
         raw.startsWith('"') && raw.endsWith('"') -> raw.drop(1).dropLast(1)
         else -> raw
     }
 
     private fun buildConfig(tables: Map<String, Map<String, Any>>): NihilArgsConfig {
-        // Find top-level profile keys: tables that have "label" and "filter" but no dots in key,
-        // or more precisely, tables whose direct entries contain label/filter.
         val profileKeys = tables.keys
             .filter { !it.contains('.') }
             .filter { tables[it]?.containsKey("label") == true && tables[it]?.containsKey("filter") == true }
@@ -66,18 +65,21 @@ object NihilArgsConfigParser {
                 .map { argTableKey ->
                     val argKey = argTableKey.removePrefix(argsPrefix)
                     val argTable = tables[argTableKey]!!
+                    val type = when (argTable["type"] as? String) {
+                        "bool" -> ArgType.BOOL
+                        "select" -> ArgType.SELECT
+                        "text" -> ArgType.TEXT
+                        "derived" -> ArgType.DERIVED
+                        else -> ArgType.BOOL
+                    }
                     ArgDefinition(
                         key = argKey,
                         label = argTable["label"] as? String ?: argKey,
-                        type = when (argTable["type"] as? String) {
-                            "bool" -> ArgType.BOOL
-                            "select" -> ArgType.SELECT
-                            "text" -> ArgType.TEXT
-                            else -> ArgType.BOOL
-                        },
+                        type = type,
                         flag = argTable["flag"] as? String ?: "--$argKey",
                         default = argTable["default"]?.toString() ?: "",
                         options = (argTable["options"] as? List<*>)?.map { it.toString() } ?: emptyList(),
+                        valueTemplate = argTable["value"] as? String ?: "",
                     )
                 }
 

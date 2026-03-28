@@ -1,9 +1,5 @@
 package cz.nihil_engine.nihil_utils_plugin.args
 
-import com.intellij.execution.RunManagerListener
-import com.intellij.execution.RunnerAndConfigurationSettings
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
 import com.intellij.openapi.ui.ComboBox
@@ -16,102 +12,89 @@ import com.intellij.util.ui.UIUtil
 import java.awt.*
 import javax.swing.*
 
-class NihilArgsPanel(private val project: Project) : Disposable {
+/**
+ * Builds a panel showing the args UI for the currently active run config.
+ * Intended for use inside a popup — stateless, no listeners.
+ *
+ * Derived args are displayed as read-only greyed-out labels that update
+ * live when any editable arg in the same profile changes.
+ */
+object NihilArgsPanelBuilder {
 
-    val component: JComponent
-    private val contentPanel = JPanel()
-    private val configChangeListener: () -> Unit
-
-    init {
-        contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
-        contentPanel.border = JBUI.Borders.empty(8)
-
-        val scrollPane = com.intellij.ui.components.JBScrollPane(contentPanel).apply {
-            border = JBUI.Borders.empty()
-            horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+    fun build(project: Project): JComponent {
+        val panel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            border = JBUI.Borders.empty(8, 12)
         }
-        component = scrollPane
 
-        configChangeListener = { rebuildUI() }
-        NihilArgsConfigService.getInstance(project).addChangeListener(configChangeListener)
+        val service = NihilArgsConfigService.getInstance(project)
+        val targetName = RunConfigTargetResolver.resolve(project)
+        val profile = targetName?.let { service.config.findProfile(it) }
 
-        val connection = project.messageBus.connect(this)
-
-        connection.subscribe(
-            RunManagerListener.TOPIC,
-            object : RunManagerListener {
-                override fun runConfigurationSelected(settings: RunnerAndConfigurationSettings?) {
-                    rebuildUI()
-                }
-
-                override fun runConfigurationChanged(settings: RunnerAndConfigurationSettings) {
-                    rebuildUI()
-                }
-            },
-        )
-
-        connection.subscribe(
-            com.intellij.execution.ExecutionTargetManager.TOPIC,
-            object : com.intellij.execution.ExecutionTargetListener {
-                override fun activeTargetChanged(newTarget: com.intellij.execution.ExecutionTarget) {
-                    rebuildUI()
-                }
-            },
-        )
-
-        rebuildUI()
-    }
-
-    private fun rebuildUI() {
-        ApplicationManager.getApplication().invokeLater {
-            contentPanel.removeAll()
-
-            val service = NihilArgsConfigService.getInstance(project)
-            val targetName = RunConfigTargetResolver.resolve(project)
-            val profile = targetName?.let { service.config.findProfile(it) }
-
-            if (profile == null) {
-                contentPanel.add(createEmptyStatePanel(targetName))
+        if (profile == null) {
+            val label = if (targetName != null) {
+                "No args profile matches target \"$targetName\""
             } else {
-                contentPanel.add(createProfileHeader(profile, targetName))
-                contentPanel.add(Box.createVerticalStrut(8))
-
-                for (arg in profile.args) {
-                    if (arg.type == ArgType.DERIVED) continue
-
-                    contentPanel.add(createArgRow(service, profile, arg))
-                    contentPanel.add(Box.createVerticalStrut(4))
-                }
+                "No run configuration selected"
             }
-
-            contentPanel.add(Box.createVerticalGlue())
-
-            contentPanel.revalidate()
-            contentPanel.repaint()
+            panel.add(JBLabel(label).apply {
+                foreground = UIUtil.getContextHelpForeground()
+                alignmentX = Component.LEFT_ALIGNMENT
+            })
+            return panel
         }
+
+        // Collect derived labels so we can update them when editable args change
+        val derivedLabels = mutableListOf<Pair<ArgDefinition, JBLabel>>()
+
+        val updateDerived = {
+            val siblings = service.resolvedSiblingValues(profile)
+            for ((arg, label) in derivedLabels) {
+                label.text = service.expandMacros(arg.valueTemplate, siblings)
+            }
+        }
+
+        panel.add(createHeader(profile, targetName))
+        panel.add(Box.createVerticalStrut(8))
+
+        // Editable args
+        for (arg in profile.args) {
+            if (arg.type == ArgType.DERIVED) continue
+            panel.add(createArgRow(service, profile, arg, updateDerived))
+            panel.add(Box.createVerticalStrut(4))
+        }
+
+        // Derived args section
+        val derivedArgs = profile.args.filter { it.type == ArgType.DERIVED }
+        if (derivedArgs.isNotEmpty()) {
+            panel.add(Box.createVerticalStrut(4))
+            panel.add(TitledSeparator("Derived").apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+            })
+            panel.add(Box.createVerticalStrut(4))
+
+            val siblings = service.resolvedSiblingValues(profile)
+            for (arg in derivedArgs) {
+                val expanded = service.expandMacros(arg.valueTemplate, siblings)
+                val valueLabel = JBLabel(expanded).apply {
+                    foreground = UIUtil.getContextHelpForeground()
+                }
+                derivedLabels.add(arg to valueLabel)
+                panel.add(createLabeledRow(arg.flag, arg.valueTemplate, valueLabel))
+                panel.add(Box.createVerticalStrut(4))
+            }
+        }
+
+        return panel
     }
 
-    private fun createEmptyStatePanel(targetName: String?): JComponent {
-        val label = if (targetName != null) {
-            "No args profile matches target \"$targetName\""
-        } else {
-            "No run configuration selected"
-        }
-        return JBLabel(label).apply {
-            foreground = UIUtil.getContextHelpForeground()
-            border = JBUI.Borders.empty(16)
-            alignmentX = Component.LEFT_ALIGNMENT
-        }
-    }
-
-    private fun createProfileHeader(profile: TargetProfile, targetName: String): JComponent {
+    private fun createHeader(profile: TargetProfile, targetName: String): JComponent {
         return JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             isOpaque = false
             alignmentX = Component.LEFT_ALIGNMENT
 
             add(TitledSeparator(profile.label))
-
             add(JBLabel(targetName).apply {
                 foreground = UIUtil.getContextHelpForeground()
                 font = JBUI.Fonts.smallFont()
@@ -124,10 +107,11 @@ class NihilArgsPanel(private val project: Project) : Disposable {
         service: NihilArgsConfigService,
         profile: TargetProfile,
         arg: ArgDefinition,
+        onChanged: () -> Unit,
     ): JComponent = when (arg.type) {
-        ArgType.BOOL -> createBoolRow(service, profile, arg)
-        ArgType.SELECT -> createSelectRow(service, profile, arg)
-        ArgType.TEXT -> createTextRow(service, profile, arg)
+        ArgType.BOOL -> createBoolRow(service, profile, arg, onChanged)
+        ArgType.SELECT -> createSelectRow(service, profile, arg, onChanged)
+        ArgType.TEXT -> createTextRow(service, profile, arg, onChanged)
         ArgType.DERIVED -> throw IllegalStateException("DERIVED args should not reach createArgRow")
     }
 
@@ -135,12 +119,14 @@ class NihilArgsPanel(private val project: Project) : Disposable {
         service: NihilArgsConfigService,
         profile: TargetProfile,
         arg: ArgDefinition,
+        onChanged: () -> Unit,
     ): JComponent {
         return JBCheckBox(arg.label, service.getBoolValue(profile, arg)).apply {
             toolTipText = arg.flag
             alignmentX = Component.LEFT_ALIGNMENT
             addActionListener {
                 service.setBoolValue(profile, arg, isSelected)
+                onChanged()
             }
         }
     }
@@ -149,6 +135,7 @@ class NihilArgsPanel(private val project: Project) : Disposable {
         service: NihilArgsConfigService,
         profile: TargetProfile,
         arg: ArgDefinition,
+        onChanged: () -> Unit,
     ): JComponent {
         val current = service.getValue(profile, arg)
         val combo = ComboBox(arg.options.toTypedArray()).apply {
@@ -156,6 +143,7 @@ class NihilArgsPanel(private val project: Project) : Disposable {
             addActionListener {
                 val selected = selectedItem as? String ?: return@addActionListener
                 service.setValue(profile, arg, selected)
+                onChanged()
             }
         }
 
@@ -166,16 +154,19 @@ class NihilArgsPanel(private val project: Project) : Disposable {
         service: NihilArgsConfigService,
         profile: TargetProfile,
         arg: ArgDefinition,
+        onChanged: () -> Unit,
     ): JComponent {
         val current = service.getValue(profile, arg)
         val field = JBTextField(current).apply {
             columns = 20
             addActionListener {
                 service.setValue(profile, arg, text)
+                onChanged()
             }
             addFocusListener(object : java.awt.event.FocusAdapter() {
                 override fun focusLost(e: java.awt.event.FocusEvent?) {
                     service.setValue(profile, arg, text)
+                    onChanged()
                 }
             })
         }
@@ -200,9 +191,5 @@ class NihilArgsPanel(private val project: Project) : Disposable {
             add(labelComponent, BorderLayout.WEST)
             add(control, BorderLayout.CENTER)
         }
-    }
-
-    override fun dispose() {
-        NihilArgsConfigService.getInstance(project).removeChangeListener(configChangeListener)
     }
 }

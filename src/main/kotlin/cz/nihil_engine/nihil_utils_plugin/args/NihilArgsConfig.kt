@@ -1,6 +1,6 @@
 package cz.nihil_engine.nihil_utils_plugin.args
 
-enum class ArgType { BOOL, SELECT, TEXT }
+enum class ArgType { BOOL, SELECT, TEXT, DERIVED }
 
 data class ArgDefinition(
     val key: String,
@@ -9,6 +9,8 @@ data class ArgDefinition(
     val flag: String,
     val default: String,
     val options: List<String> = emptyList(),
+    /** Template string for DERIVED args, e.g. "${PROJECT_DIR}/paths_${render_backend}.toml" */
+    val valueTemplate: String = "",
 )
 
 data class TargetProfile(

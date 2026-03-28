@@ -5,6 +5,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration
+import com.jetbrains.cidr.execution.CidrCommandLineConfigurator;
 
 /**
  * Injects nihil_args.toml arguments into the program parameters at launch time.
@@ -23,7 +24,7 @@ class NihilArgsExecutionListener : ExecutionListener {
         val project = env.project
         val service = NihilArgsConfigService.getInstance(project)
 
-        val targetName = config.cMakeTarget?.name ?: config.name
+        val targetName = config.name
 
         val extraArgs = service.buildCommandLineArgs(targetName)
         if (extraArgs.isEmpty()) return
@@ -58,8 +59,8 @@ class NihilArgsExecutionListener : ExecutionListener {
     }
 
     companion object {
-        private const val MARKER_START = ""// "/*nihil-args*/"
-        private const val MARKER_END = ""// "/*end-nihil-args*/"
+        private const val MARKER_START = "/*nihil-args*/"
+        private const val MARKER_END = "/*end-nihil-args*/"
         private val MARKER_REGEX = Regex("${Regex.escape(MARKER_START)}.*?${Regex.escape(MARKER_END)}")
         private val MARKER_CLEANUP_REGEX = Regex("\\s*${Regex.escape(MARKER_START)}.*?${Regex.escape(MARKER_END)}\\s*")
     }

@@ -2,8 +2,6 @@ package cz.nihil_engine.nihil_utils_plugin.base_actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import cz.nihil_engine.nihil_utils_plugin.config.RunConfigExtractor
-import cz.nihil_engine.nihil_utils_plugin.renderdoc.RenderDocCapGenerator
 import java.io.File
 import javax.swing.Icon
 

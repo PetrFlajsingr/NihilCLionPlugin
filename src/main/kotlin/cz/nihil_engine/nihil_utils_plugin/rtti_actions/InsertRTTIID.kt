@@ -10,5 +10,5 @@ class InsertRTTIID : InsertOrOverwriteTextAction, DumbAware {
 
     override val textToInsert get() = generateRandomRTTIID()
 
-    override val actionName get() = "InsertRTIITypeID"
+    override val actionName get() = "InsertRTTITypeID"
 }

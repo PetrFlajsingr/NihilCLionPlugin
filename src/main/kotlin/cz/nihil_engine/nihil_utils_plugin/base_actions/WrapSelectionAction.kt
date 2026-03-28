@@ -20,8 +20,7 @@ abstract class WrapSelectionAction : AnAction, DumbAware {
     override fun actionPerformed(event: AnActionEvent) {
         val editor = event.getData(CommonDataKeys.EDITOR)
         val project = event.getData(CommonDataKeys.PROJECT)
-        if (editor == null || project == null) {
-            return; }
+        if (editor == null || project == null) return
         val document = editor.document
         val caret = editor.caretModel.primaryCaret
 

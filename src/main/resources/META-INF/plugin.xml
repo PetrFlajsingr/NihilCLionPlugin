@@ -28,7 +28,19 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="cz.nihil_engine.nihil_utils_plugin.activities.MainActivity"/>
+
+        <toolWindow id="Nihil Args"
+                    anchor="right"
+                    secondary="true"
+                    icon="AllIcons.General.Settings"
+                    factoryClass="cz.nihil_engine.nihil_utils_plugin.args.NihilArgsToolWindowFactory"/>
     </extensions>
+
+    <projectListeners>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.args.NihilArgsExecutionListener"
+                  topic="com.intellij.execution.ExecutionListener"/>
+    </projectListeners>
+
     <actions>
         <group id="cz.nihil_engine.nihil_utils_plugin.MainMenuActionGroup"
                class="cz.nihil_engine.nihil_utils_plugin.MainMenuActionGroup"
@@ -102,11 +114,6 @@
                     class="cz.nihil_engine.nihil_utils_plugin.rtti_actions.InsertRTTIID" text="Insert random RTTI ID"
                     description="Insert random RTTI ID">
             </action>
-            <!--            <separator/>-->
-            <!--            <action id="cz.nihil_engine.nihil_utils_plugin.debugger_actions.IgnoreBreakpointInstructionAction"-->
-            <!--                    class="cz.nihil_engine.nihil_utils_plugin.debugger_actions.IgnoreBreakpointInstructionAction" text="Ignore current debug break"-->
-            <!--                    description="Ignore current debug break by removing its instruction">-->
-            <!--            </action>-->
         </group>
 
 
@@ -117,6 +124,7 @@
                     anchor="after"
                     relative-to-action="Stop"/>
 
+            <separator/>
             <action
                     id="Nihil.RunTracy"
                     class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunTracyAction"

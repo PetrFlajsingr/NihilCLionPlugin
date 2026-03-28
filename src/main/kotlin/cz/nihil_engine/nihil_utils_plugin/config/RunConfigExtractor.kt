@@ -7,6 +7,7 @@ import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration
 
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.cidr.cpp.execution.CMakeBuildProfileExecutionTarget
+import cz.nihil_engine.nihil_utils_plugin.args.NihilArgsConfigService
 
 data class RunConfigData(
     val exePath: String,
@@ -31,9 +32,21 @@ object RunConfigExtractor {
 
         val exePath = buildConfig.productFile?.absolutePath ?: return null
 
+        val targetName = config.cMakeTarget?.name ?: config.name
+        val nihilArgs = NihilArgsConfigService.getInstance(project)
+            .buildCommandLineArgs(targetName)
+
+        val baseArgs = config.programParameters.orEmpty()
+        val combinedArgs = if (nihilArgs.isEmpty()) {
+            baseArgs
+        } else {
+            val injected = nihilArgs.joinToString(" ")
+            if (baseArgs.isBlank()) injected else "$baseArgs $injected"
+        }
+
         return RunConfigData(
             exePath = exePath,
-            args = config.programParameters.orEmpty(),
+            args = combinedArgs,
             workingDir = config.workingDirectory
         )
     }

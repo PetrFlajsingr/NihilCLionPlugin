@@ -85,6 +85,12 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
     fun setBoolValue(profile: TargetProfile, arg: ArgDefinition, value: Boolean) =
         setValue(profile, arg, value.toString())
 
+    fun getMultiValue(profile: TargetProfile, arg: ArgDefinition): List<String> =
+        getValue(profile, arg).split("|").filter { it.isNotEmpty() }
+
+    fun setMultiValue(profile: TargetProfile, arg: ArgDefinition, values: List<String>) =
+        setValue(profile, arg, values.joinToString("|"))
+
     /**
      * Build the command line arguments for a given target name.
      * Returns empty list if no profile matches.
@@ -106,11 +112,18 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
                             add(arg.flag)
                         }
                     }
-                    ArgType.SELECT, ArgType.TEXT -> {
+                    ArgType.SELECT, ArgType.TEXT, ArgType.PATH, ArgType.INT -> {
                         val value = expandMacros(resolvedValues[arg.key] ?: "", resolvedValues)
                         if (value.isNotEmpty()) {
                             add(arg.flag)
                             add(value)
+                        }
+                    }
+                    ArgType.MULTI -> {
+                        val values = getMultiValue(profile, arg)
+                        if (values.isNotEmpty()) {
+                            add(arg.flag)
+                            add(values.joinToString(arg.separator))
                         }
                     }
                     ArgType.DERIVED -> {
@@ -152,8 +165,12 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
                     ArgType.BOOL -> {
                         if (getBoolValue(profile, arg)) put(arg.key, "true")
                     }
-                    ArgType.SELECT, ArgType.TEXT -> {
+                    ArgType.SELECT, ArgType.TEXT, ArgType.PATH, ArgType.INT -> {
                         put(arg.key, getValue(profile, arg))
+                    }
+                    ArgType.MULTI -> {
+                        val values = getMultiValue(profile, arg)
+                        if (values.isNotEmpty()) put(arg.key, values.joinToString(arg.separator))
                     }
                     ArgType.DERIVED -> {}
                 }

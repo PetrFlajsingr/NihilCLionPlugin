@@ -69,8 +69,19 @@ object NihilArgsConfigParser {
                         "bool" -> ArgType.BOOL
                         "select" -> ArgType.SELECT
                         "text" -> ArgType.TEXT
+                        "path" -> ArgType.PATH
+                        "int" -> ArgType.INT
+                        "multi" -> ArgType.MULTI
                         "derived" -> ArgType.DERIVED
                         else -> ArgType.BOOL
+                    }
+                    val pathKind = when (argTable["path_kind"] as? String) {
+                        "directory" -> PathKind.DIRECTORY
+                        else -> PathKind.FILE
+                    }
+                    val pathDirection = when (argTable["path_direction"] as? String) {
+                        "output" -> PathDirection.OUTPUT
+                        else -> PathDirection.INPUT
                     }
                     ArgDefinition(
                         key = argKey,
@@ -80,6 +91,11 @@ object NihilArgsConfigParser {
                         default = argTable["default"]?.toString() ?: "",
                         options = (argTable["options"] as? List<*>)?.map { it.toString() } ?: emptyList(),
                         valueTemplate = argTable["value"] as? String ?: "",
+                        pathKind = pathKind,
+                        pathDirection = pathDirection,
+                        min = argTable["min"]?.toString()?.toIntOrNull(),
+                        max = argTable["max"]?.toString()?.toIntOrNull(),
+                        separator = argTable["separator"] as? String ?: ",",
                     )
                 }
 

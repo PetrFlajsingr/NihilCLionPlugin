@@ -4,6 +4,10 @@ import com.intellij.execution.RunManagerListener
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.FileChooserFactory
+import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.project.Project
 import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
 import com.intellij.openapi.ui.ComboBox
@@ -14,6 +18,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import java.awt.*
+import java.nio.file.Path
 import javax.swing.*
 
 class NihilArgsPanel(private val project: Project) : Disposable {
@@ -128,6 +133,9 @@ class NihilArgsPanel(private val project: Project) : Disposable {
         ArgType.BOOL -> createBoolRow(service, profile, arg)
         ArgType.SELECT -> createSelectRow(service, profile, arg)
         ArgType.TEXT -> createTextRow(service, profile, arg)
+        ArgType.PATH -> createPathRow(service, profile, arg)
+        ArgType.INT -> createIntRow(service, profile, arg)
+        ArgType.MULTI -> createMultiRow(service, profile, arg)
         ArgType.DERIVED -> throw IllegalStateException("DERIVED args should not reach createArgRow")
     }
 
@@ -181,6 +189,100 @@ class NihilArgsPanel(private val project: Project) : Disposable {
         }
 
         return createLabeledRow(arg.label, arg.flag, field)
+    }
+
+    private fun createPathRow(
+        service: NihilArgsConfigService,
+        profile: TargetProfile,
+        arg: ArgDefinition,
+    ): JComponent {
+        val field = JBTextField(service.getValue(profile, arg)).apply {
+            columns = 20
+            addActionListener { service.setValue(profile, arg, text) }
+            addFocusListener(object : java.awt.event.FocusAdapter() {
+                override fun focusLost(e: java.awt.event.FocusEvent?) {
+                    service.setValue(profile, arg, text)
+                }
+            })
+        }
+
+        val browseButton = JButton("...").apply {
+            isFocusable = false
+            addActionListener {
+                val chosen = browsePath(arg)
+                if (chosen != null) {
+                    field.text = chosen
+                    service.setValue(profile, arg, chosen)
+                }
+            }
+        }
+
+        val inputPanel = JPanel(BorderLayout(4, 0)).apply {
+            isOpaque = false
+            add(field, BorderLayout.CENTER)
+            add(browseButton, BorderLayout.EAST)
+        }
+
+        return createLabeledRow(arg.label, arg.flag, inputPanel)
+    }
+
+    private fun browsePath(arg: ArgDefinition): String? =
+        if (arg.pathDirection == PathDirection.OUTPUT && arg.pathKind == PathKind.FILE) {
+            val nullPath: Path? = null
+            FileChooserFactory.getInstance()
+                .createSaveFileDialog(FileSaverDescriptor(arg.label, ""), project)
+                .save(nullPath, null)
+                ?.file?.absolutePath
+        } else {
+            val descriptor = if (arg.pathKind == PathKind.DIRECTORY)
+                FileChooserDescriptorFactory.createSingleFolderDescriptor()
+            else
+                FileChooserDescriptorFactory.createSingleFileDescriptor()
+            FileChooser.chooseFile(descriptor, project, null)?.path
+        }
+
+    private fun createIntRow(
+        service: NihilArgsConfigService,
+        profile: TargetProfile,
+        arg: ArgDefinition,
+    ): JComponent {
+        val current = service.getValue(profile, arg).toIntOrNull() ?: arg.default.toIntOrNull() ?: 0
+        val spinner = JSpinner(SpinnerNumberModel(current, arg.min ?: Int.MIN_VALUE, arg.max ?: Int.MAX_VALUE, 1)).apply {
+            addChangeListener {
+                service.setValue(profile, arg, value.toString())
+            }
+        }
+        return createLabeledRow(arg.label, arg.flag, spinner)
+    }
+
+    private fun createMultiRow(
+        service: NihilArgsConfigService,
+        profile: TargetProfile,
+        arg: ArgDefinition,
+    ): JComponent {
+        val selected = service.getMultiValue(profile, arg).toMutableSet()
+
+        return JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            isOpaque = false
+            alignmentX = Component.LEFT_ALIGNMENT
+
+            add(JBLabel("${arg.label}:").apply {
+                toolTipText = arg.flag
+                alignmentX = Component.LEFT_ALIGNMENT
+            })
+
+            for (option in arg.options) {
+                add(JBCheckBox(option, option in selected).apply {
+                    alignmentX = Component.LEFT_ALIGNMENT
+                    border = JBUI.Borders.emptyLeft(16)
+                    addActionListener {
+                        if (isSelected) selected.add(option) else selected.remove(option)
+                        service.setMultiValue(profile, arg, selected.toList())
+                    }
+                })
+            }
+        }
     }
 
     private fun createLabeledRow(

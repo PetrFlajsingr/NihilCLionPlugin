@@ -2,6 +2,8 @@ package cz.nihil_engine.nihil_utils_plugin.assert_actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import cz.nihil_engine.nihil_utils_plugin.base_actions.InsertTextAction
+import cz.nihil_engine.nihil_utils_plugin.base_actions.cursorHere
+import cz.nihil_engine.nihil_utils_plugin.base_actions.select
 import cz.nihil_engine.nihil_utils_plugin.generateRandomAssertID
 
 abstract class InsertErrorActionBase : InsertTextAction() {
@@ -9,7 +11,7 @@ abstract class InsertErrorActionBase : InsertTextAction() {
     override val textToInsert
         get() = """%s(%s, LogTemp, "%s");""".format(
             errorName, generateRandomAssertID(),
-            message
+            if (message.isEmpty()) cursorHere() else select(message),
         )
     open val message get() = ""
     override fun update(e: AnActionEvent) {

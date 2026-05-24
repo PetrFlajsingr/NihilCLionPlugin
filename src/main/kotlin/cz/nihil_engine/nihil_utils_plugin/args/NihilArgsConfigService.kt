@@ -4,7 +4,9 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
@@ -64,6 +66,20 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         log.info("Loaded nihil_args.toml: ${config.profiles.size} profiles")
     }
 
+    fun save(newConfig: NihilArgsConfig) {
+        config = newConfig
+        try {
+            val file = configFile
+            NihilArgsConfigWriter.write(newConfig, file)
+            ApplicationManager.getApplication().invokeLater {
+                LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
+            }
+        } catch (e: Exception) {
+            log.warn("Failed to write nihil_args.toml", e)
+        }
+        notifyListeners()
+    }
+
     // --- State persistence ---
 
     private fun stateKey(profileKey: String, argKey: String): String =
@@ -91,15 +107,6 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
     fun setMultiValue(profile: TargetProfile, arg: ArgDefinition, values: List<String>) =
         setValue(profile, arg, values.joinToString("|"))
 
-    /**
-     * Build the command line arguments for a given target name.
-     * Returns empty list if no profile matches.
-     *
-     * Expansion order:
-     *  1. Resolve current values for all non-derived args
-     *  2. Expand derived args by substituting sibling references (${arg_key})
-     *  3. Expand built-in macros (${PROJECT_DIR}) in all values
-     */
     fun buildCommandLineArgs(targetName: String): List<String> {
         val profile = config.findProfile(targetName) ?: return emptyList()
         val resolvedValues = resolvedSiblingValues(profile)
@@ -138,10 +145,6 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         }
     }
 
-    /**
-     * Expand all ${...} references in a value string.
-     * Built-in macros (PROJECT_DIR) are expanded first, then sibling arg references.
-     */
     fun expandMacros(template: String, siblingValues: Map<String, String>): String {
         if (!template.contains("\${")) return template
 
@@ -155,9 +158,6 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         }
     }
 
-    /**
-     * Collect current resolved values for all non-derived args in a profile.
-     */
     fun resolvedSiblingValues(profile: TargetProfile): Map<String, String> {
         return buildMap {
             for (arg in profile.args) {

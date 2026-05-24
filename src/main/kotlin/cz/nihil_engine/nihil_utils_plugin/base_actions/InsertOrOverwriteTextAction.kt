@@ -16,12 +16,23 @@ abstract class InsertOrOverwriteTextAction : InsertTextAction, DumbAware {
         val document = editor.document
         val caret = editor.caretModel.primaryCaret
 
+        val (cleaned, sel) = stripMarkers(textToInsert)
+        val replaceStart = caret.selectionStart
+        val replaceEnd = caret.selectionEnd
+
         WriteCommandAction
             .writeCommandAction(project)
             .withName(actionName)
             .withGlobalUndo()
             .run<Exception> {
-                document.replaceString(caret.selectionStart, caret.selectionEnd, textToInsert)
+                document.replaceString(replaceStart, replaceEnd, cleaned)
             }
+
+        if (sel != null) {
+            val absStart = replaceStart + sel.start
+            val absEnd = replaceStart + sel.end
+            caret.moveToOffset(absEnd)
+            caret.setSelection(absStart, absEnd)
+        }
     }
 }

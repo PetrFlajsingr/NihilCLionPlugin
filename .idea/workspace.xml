@@ -4,18 +4,39 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Move args ui to a popup">
+    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Add support for more arg types">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigWriter.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/NihilIdPasteProcessor.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/SelectionMarker.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/navigation/GoToAssertByIdAction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/settings/NihilArgsSettingsConfigurable.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/settings/NihilPluginSettings.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/settings/NihilPluginSettingsConfigurable.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/util/IconUtils.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/logviewer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/renderdoc.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/icons/tracy.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfig.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigParser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigParser.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsConfigService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanelBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/args/NihilArgsPanelBuilder.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertAssertActionBase.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertAssertActionBase.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertErrorActionBase.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertErrorActionBase.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertStaticAssertAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/assert_actions/InsertStaticAssertAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertOrOverwriteTextAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertOrOverwriteTextAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertTextAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/InsertTextAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunNihilLogViewerAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunNihilLogViewerAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunRenderDocAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunRenderDocAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunTracyAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/tool_actions/RunTracyAction.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="65" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -86,6 +107,65 @@
     <commands />
     <urls />
   </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.000000000001055" />
+      <entry key="S2" value="1.0010134565832312" />
+      <entry key="S5" value="1.0634339943611033" />
+      <entry key="S10" value="1.2518610616215053" />
+      <entry key="S30" value="1.6316223160012888" />
+      <entry key="S60" value="1.8233096513872384" />
+      <entry key="M2" value="2.3699979655021672" />
+      <entry key="M5" value="4.548193535176966" />
+      <entry key="M10" value="6.531936390351994" />
+      <entry key="M15" value="7.480208048674207" />
+      <entry key="M30" value="8.622850566784361" />
+      <entry key="H1" value="9.27929808220793" />
+      <entry key="H2" value="9.631235944965605" />
+      <entry key="H4" value="9.813465055929328" />
+      <entry key="D1" value="9.968607517503528" />
+      <entry key="W1" value="9.995507874429435" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.12499999999999997" />
+      <entry key="MS500" value="0.6597539553870692" />
+      <entry key="S2" value="0.9021385566067293" />
+      <entry key="S5" value="1.0194346128425555" />
+      <entry key="S10" value="1.2247170434220465" />
+      <entry key="S30" value="1.6191797620181714" />
+      <entry key="S60" value="1.8163322380470441" />
+      <entry key="M2" value="2.366076062936986" />
+      <entry key="M5" value="4.54615949116039" />
+      <entry key="M10" value="6.530719929502691" />
+      <entry key="M15" value="7.4793342305354305" />
+      <entry key="M30" value="8.622375964650459" />
+      <entry key="H1" value="9.279049984772582" />
+      <entry key="H2" value="9.63110900590702" />
+      <entry key="H4" value="9.813400838571766" />
+      <entry key="D1" value="9.968596708537975" />
+      <entry key="W1" value="9.995506327664568" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -94,31 +174,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build pf_assert_integration.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Run IDE with Plugin.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.pf_assert_integration [assemble].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.pf_assert_integration [build].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/xflajs00/IdeaProjects/pf_assert_integration&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build pf_assert_integration.executor": "Run",
+    "Gradle.Run IDE with Plugin.executor": "Run",
+    "Gradle.pf_assert_integration [assemble].executor": "Run",
+    "Gradle.pf_assert_integration [build].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/xflajs00/IdeaProjects/pf_assert_integration",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
       <recent name="cz.nihil_engine.nihil_utils_plugin" />
@@ -343,7 +423,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774734018814</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add support for more arg types">
+      <option name="closed" value="true" />
+      <created>1779573985991</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1779573985991</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -354,6 +442,7 @@
     <MESSAGE value="Refactoring" />
     <MESSAGE value="Add a config and UI for target specific program arg configuration" />
     <MESSAGE value="Move args ui to a popup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Move args ui to a popup" />
+    <MESSAGE value="Add support for more arg types" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add support for more arg types" />
   </component>
 </project>

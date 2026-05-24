@@ -23,14 +23,23 @@ abstract class InsertTextAction : AnAction, DumbAware {
         val document = editor.document
         val caret = editor.caretModel.primaryCaret
 
+        val (cleaned, sel) = stripMarkers(textToInsert)
+        val insertOffset = caret.offset
 
         WriteCommandAction
             .writeCommandAction(project)
             .withName(actionName)
             .withGlobalUndo()
             .run<Exception> {
-                document.insertString(caret.offset, textToInsert)
+                document.insertString(insertOffset, cleaned)
             }
+
+        if (sel != null) {
+            val absStart = insertOffset + sel.start
+            val absEnd = insertOffset + sel.end
+            caret.moveToOffset(absEnd)
+            caret.setSelection(absStart, absEnd)
+        }
     }
 
     override fun update(e: AnActionEvent) {

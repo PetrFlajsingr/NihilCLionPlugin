@@ -21,6 +21,7 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         private set
 
     private val listeners = mutableListOf<() -> Unit>()
+    @Volatile private var suppressNextVfsReload = false
 
     private val configFile: File
         get() = File(project.basePath ?: "", ".idea/nihil_args.toml")
@@ -36,8 +37,12 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
                         event.path.endsWith("nihil_args.toml")
                     }
                     if (relevant) {
-                        reload()
-                        notifyListeners()
+                        if (suppressNextVfsReload) {
+                            suppressNextVfsReload = false
+                        } else {
+                            reload()
+                            notifyListeners()
+                        }
                     }
                 }
             }
@@ -71,6 +76,7 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         try {
             val file = configFile
             NihilArgsConfigWriter.write(newConfig, file)
+            suppressNextVfsReload = true
             ApplicationManager.getApplication().invokeLater {
                 LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
             }

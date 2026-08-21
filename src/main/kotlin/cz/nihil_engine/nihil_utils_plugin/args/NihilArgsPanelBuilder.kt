@@ -1,21 +1,25 @@
 package cz.nihil_engine.nihil_utils_plugin.args
 
-import com.intellij.openapi.fileChooser.FileChooser
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.fileChooser.FileChooserFactory
-import com.intellij.openapi.fileChooser.FileSaverDescriptor
+import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.MessageType
+import com.intellij.openapi.ui.popup.Balloon
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.Balloon.Position
 import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
-import com.intellij.openapi.ui.ComboBox
+import cz.nihil_engine.nihil_utils_plugin.config.RunConfigExtractor
 import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import java.awt.*
-import java.nio.file.Path
-import javax.swing.*
+import java.awt.Component
+import java.awt.datatransfer.StringSelection
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JButton
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 /**
  * Builds a panel showing the args UI for the currently active run config.
@@ -62,14 +66,12 @@ object NihilArgsPanelBuilder {
         panel.add(createHeader(profile, targetName))
         panel.add(Box.createVerticalStrut(8))
 
-        // Editable args
         for (arg in profile.args) {
             if (arg.type == ArgType.DERIVED) continue
-            panel.add(createArgRow(service, profile, arg, updateDerived, project))
+            panel.add(NihilArgRowFactory.createArgRow(service, profile, arg, project, updateDerived))
             panel.add(Box.createVerticalStrut(4))
         }
 
-        // Derived args section
         val derivedArgs = profile.args.filter { it.type == ArgType.DERIVED }
         if (derivedArgs.isNotEmpty()) {
             panel.add(Box.createVerticalStrut(4))
@@ -85,12 +87,80 @@ object NihilArgsPanelBuilder {
                     foreground = UIUtil.getContextHelpForeground()
                 }
                 derivedLabels.add(arg to valueLabel)
-                panel.add(createLabeledRow(arg.flag, arg.valueTemplate, valueLabel))
+                panel.add(NihilArgRowFactory.createLabeledRow(arg.flag, arg.valueTemplate, valueLabel))
                 panel.add(Box.createVerticalStrut(4))
             }
         }
 
+        panel.add(Box.createVerticalStrut(8))
+        panel.add(createActionButtons(project, service, profile, targetName))
+
         return panel
+    }
+
+    private fun createActionButtons(
+        project: Project,
+        service: NihilArgsConfigService,
+        profile: TargetProfile,
+        targetName: String,
+    ): JComponent {
+        val copyArgs = JButton("Copy Args").apply {
+            toolTipText = "Copy the command-line arguments to the clipboard"
+            addActionListener {
+                val args = resolveArgs(project, service, targetName)
+                if (args.isBlank()) {
+                    showBalloon(this, "No arguments to copy", MessageType.WARNING)
+                } else {
+                    copyToClipboard(args)
+                    showBalloon(this, "Arguments copied", MessageType.INFO)
+                }
+            }
+        }
+
+        val copyExeAndArgs = JButton("Copy Exe + Args").apply {
+            toolTipText = "Copy the absolute executable path followed by the arguments"
+            addActionListener {
+                val data = RunConfigExtractor.extract(project)
+                if (data == null || data.exePath.isBlank()) {
+                    showBalloon(this, "Could not resolve executable path", MessageType.WARNING)
+                } else {
+                    val text = if (data.args.isBlank()) data.exePath else "${data.exePath} ${data.args}"
+                    copyToClipboard(text)
+                    showBalloon(this, "Executable + arguments copied", MessageType.INFO)
+                }
+            }
+        }
+
+        return JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.X_AXIS)
+            isOpaque = false
+            alignmentX = Component.LEFT_ALIGNMENT
+            add(copyArgs)
+            add(Box.createHorizontalStrut(8))
+            add(copyExeAndArgs)
+            add(Box.createHorizontalGlue())
+        }
+    }
+
+    private fun resolveArgs(
+        project: Project,
+        service: NihilArgsConfigService,
+        targetName: String,
+    ): String {
+        RunConfigExtractor.extract(project)?.let { return it.args }
+        return service.buildCommandLineArgs(targetName).joinToString(" ")
+    }
+
+    private fun copyToClipboard(text: String) {
+        CopyPasteManager.getInstance().setContents(StringSelection(text))
+    }
+
+    private fun showBalloon(anchor: JComponent, message: String, type: MessageType) {
+        val balloon = JBPopupFactory.getInstance()
+            .createHtmlTextBalloonBuilder(message, type, null)
+            .setFadeoutTime(2000)
+            .createBalloon()
+        balloon.show(RelativePoint.getCenterOf(anchor), Position.above)
     }
 
     private fun createHeader(profile: TargetProfile, targetName: String): JComponent {
@@ -105,205 +175,6 @@ object NihilArgsPanelBuilder {
                 font = JBUI.Fonts.smallFont()
                 border = JBUI.Borders.emptyLeft(4)
             })
-        }
-    }
-
-    private fun createArgRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-        project: Project,
-    ): JComponent = when (arg.type) {
-        ArgType.BOOL -> createBoolRow(service, profile, arg, onChanged)
-        ArgType.SELECT -> createSelectRow(service, profile, arg, onChanged)
-        ArgType.TEXT -> createTextRow(service, profile, arg, onChanged)
-        ArgType.PATH -> createPathRow(service, profile, arg, onChanged, project)
-        ArgType.INT -> createIntRow(service, profile, arg, onChanged)
-        ArgType.MULTI -> createMultiRow(service, profile, arg, onChanged)
-        ArgType.DERIVED -> throw IllegalStateException("DERIVED args should not reach createArgRow")
-    }
-
-    private fun createBoolRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-    ): JComponent {
-        return JBCheckBox(arg.label, service.getBoolValue(profile, arg)).apply {
-            toolTipText = arg.flag
-            alignmentX = Component.LEFT_ALIGNMENT
-            addActionListener {
-                service.setBoolValue(profile, arg, isSelected)
-                onChanged()
-            }
-        }
-    }
-
-    private fun createSelectRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-    ): JComponent {
-        val current = service.getValue(profile, arg)
-        val combo = ComboBox(arg.options.toTypedArray()).apply {
-            selectedItem = current
-            addActionListener {
-                val selected = selectedItem as? String ?: return@addActionListener
-                service.setValue(profile, arg, selected)
-                onChanged()
-            }
-        }
-
-        return createLabeledRow(arg.label, arg.flag, combo)
-    }
-
-    private fun createTextRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-    ): JComponent {
-        val current = service.getValue(profile, arg)
-        val field = JBTextField(current).apply {
-            columns = 20
-            addActionListener {
-                service.setValue(profile, arg, text)
-                onChanged()
-            }
-            addFocusListener(object : java.awt.event.FocusAdapter() {
-                override fun focusLost(e: java.awt.event.FocusEvent?) {
-                    service.setValue(profile, arg, text)
-                    onChanged()
-                }
-            })
-        }
-
-        return createLabeledRow(arg.label, arg.flag, field)
-    }
-
-    private fun createPathRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-        project: Project,
-    ): JComponent {
-        val field = JBTextField(service.getValue(profile, arg)).apply {
-            columns = 20
-            addActionListener {
-                service.setValue(profile, arg, text)
-                onChanged()
-            }
-            addFocusListener(object : java.awt.event.FocusAdapter() {
-                override fun focusLost(e: java.awt.event.FocusEvent?) {
-                    service.setValue(profile, arg, text)
-                    onChanged()
-                }
-            })
-        }
-
-        val browseButton = JButton("...").apply {
-            isFocusable = false
-            addActionListener {
-                val chosen = choosePath(arg, project)
-                if (chosen != null) {
-                    field.text = chosen
-                    service.setValue(profile, arg, chosen)
-                    onChanged()
-                }
-            }
-        }
-
-        val inputPanel = JPanel(BorderLayout(4, 0)).apply {
-            isOpaque = false
-            add(field, BorderLayout.CENTER)
-            add(browseButton, BorderLayout.EAST)
-        }
-
-        return createLabeledRow(arg.label, arg.flag, inputPanel)
-    }
-
-    private fun choosePath(arg: ArgDefinition, project: Project): String? =
-        if (arg.pathDirection == PathDirection.OUTPUT && arg.pathKind == PathKind.FILE) {
-            val nullPath: Path? = null
-            FileChooserFactory.getInstance()
-                .createSaveFileDialog(FileSaverDescriptor(arg.label, ""), project)
-                .save(nullPath, null)
-                ?.file?.absolutePath
-        } else {
-            val descriptor = if (arg.pathKind == PathKind.DIRECTORY)
-                FileChooserDescriptorFactory.createSingleFolderDescriptor()
-            else
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-            FileChooser.chooseFile(descriptor, project, null)?.path
-        }
-
-    private fun createIntRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-    ): JComponent {
-        val current = service.getValue(profile, arg).toIntOrNull() ?: arg.default.toIntOrNull() ?: 0
-        val spinner = JSpinner(SpinnerNumberModel(current, arg.min ?: Int.MIN_VALUE, arg.max ?: Int.MAX_VALUE, 1)).apply {
-            addChangeListener {
-                service.setValue(profile, arg, value.toString())
-                onChanged()
-            }
-        }
-        return createLabeledRow(arg.label, arg.flag, spinner)
-    }
-
-    private fun createMultiRow(
-        service: NihilArgsConfigService,
-        profile: TargetProfile,
-        arg: ArgDefinition,
-        onChanged: () -> Unit,
-    ): JComponent {
-        val selected = service.getMultiValue(profile, arg).toMutableSet()
-
-        return JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            isOpaque = false
-            alignmentX = Component.LEFT_ALIGNMENT
-
-            add(JBLabel("${arg.label}:").apply {
-                toolTipText = arg.flag
-                alignmentX = Component.LEFT_ALIGNMENT
-            })
-
-            for (option in arg.options) {
-                add(JBCheckBox(option, option in selected).apply {
-                    alignmentX = Component.LEFT_ALIGNMENT
-                    border = JBUI.Borders.emptyLeft(16)
-                    addActionListener {
-                        if (isSelected) selected.add(option) else selected.remove(option)
-                        service.setMultiValue(profile, arg, selected.toList())
-                        onChanged()
-                    }
-                })
-            }
-        }
-    }
-
-    private fun createLabeledRow(
-        label: String,
-        tooltip: String,
-        control: JComponent,
-    ): JComponent {
-        return JPanel(BorderLayout(8, 0)).apply {
-            isOpaque = false
-            alignmentX = Component.LEFT_ALIGNMENT
-            maximumSize = Dimension(Int.MAX_VALUE, preferredSize.height + 8)
-
-            val labelComponent = JBLabel("$label:").apply {
-                toolTipText = tooltip
-                preferredSize = Dimension(140, preferredSize.height)
-            }
-            add(labelComponent, BorderLayout.WEST)
-            add(control, BorderLayout.CENTER)
         }
     }
 }

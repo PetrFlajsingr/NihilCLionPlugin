@@ -138,6 +138,12 @@
 
             <separator/>
             <action
+                    id="Nihil.RunDashboard"
+                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunNihilDashboardAction"
+                    text="Nihil Tools Dashboard"
+                    description="Open Nihil Tools Dashboard"/>
+
+            <action
                     id="Nihil.RunTracy"
                     class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunTracyAction"
                     text="Tracy"

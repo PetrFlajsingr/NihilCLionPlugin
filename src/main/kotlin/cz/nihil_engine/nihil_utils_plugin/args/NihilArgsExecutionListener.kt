@@ -5,7 +5,6 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration
-import com.jetbrains.cidr.execution.CidrCommandLineConfigurator;
 
 /**
  * Injects nihil_args.toml arguments into the program parameters at launch time.
@@ -44,15 +43,22 @@ class NihilArgsExecutionListener : ExecutionListener {
         log.info("Injected nihil args for '$targetName': $injected")
     }
 
+    override fun processNotStarted(executorId: String, env: ExecutionEnvironment) {
+        cleanupMarkers(env)
+    }
+
     override fun processTerminated(
         executorId: String,
         env: ExecutionEnvironment,
         handler: ProcessHandler,
         exitCode: Int,
     ) {
+        cleanupMarkers(env)
+    }
+
+    private fun cleanupMarkers(env: ExecutionEnvironment) {
         val config = env.runProfile as? CMakeAppRunConfiguration ?: return
         val current = config.programParameters ?: return
-
         if (current.contains(MARKER_START)) {
             config.programParameters = current.replace(MARKER_CLEANUP_REGEX, "").trim()
         }

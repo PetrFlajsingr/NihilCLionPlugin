@@ -12,10 +12,10 @@ object RenderDocCapGenerator {
                 "rdocCaptureSettings": 1,
                 "settings": {
                     "autoStart": false,
-                    "commandLine": "${data.args.replace("\\", "\\\\")}",
+                    "commandLine": "${jsonEscape(data.args)}",
                     "environment": [
                     ],
-                    "executable": "${data.exePath.replace("\\", "/")}",
+                    "executable": "${jsonEscapePath(data.exePath)}",
                     "inject": false,
                     "numQueuedFrames": 0,
                     "options": {
@@ -33,13 +33,22 @@ object RenderDocCapGenerator {
                         "verifyBufferAccess": false
                     },
                     "queuedFrameCap": 0,
-                    "workingDir": "${(data.workingDir ?: Paths.get(data.exePath).parent.toString()).replace("\\", "/")}"
+                    "workingDir": "${jsonEscapePath(data.workingDir ?: Paths.get(data.exePath).parent.toString())}"
                 }
-            }            
+            }
         """.trimIndent()
 
         val file = File.createTempFile("renderdoc-", ".cap")
         file.writeText(json)
         return file
     }
+
+    private fun jsonEscape(s: String): String = s
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
+
+    private fun jsonEscapePath(path: String): String = jsonEscape(path.replace("\\", "/"))
 }

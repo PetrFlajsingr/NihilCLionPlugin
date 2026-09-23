@@ -1,0 +1,5 @@
+[[vfs.mount]]
+virtual = "/config"
+physical = "config"
+read_only = true
+priority = 0

@@ -13,6 +13,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import cz.nihil_engine.nihil_utils_plugin.args.ArgDefinition
+import cz.nihil_engine.nihil_utils_plugin.args.ArgPreset
 import cz.nihil_engine.nihil_utils_plugin.args.ArgType
 import cz.nihil_engine.nihil_utils_plugin.args.NihilArgsConfig
 import cz.nihil_engine.nihil_utils_plugin.args.NihilArgsConfigService
@@ -168,6 +169,7 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
             label = "New Profile",
             filterPattern = ".*",
             args = mutableListOf(),
+            presets = emptyList(),
         )
         workingProfiles.add(newProfile)
         profileListModel.addElement(newProfile)
@@ -530,6 +532,8 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
         var label: String,
         var filterPattern: String,
         val args: MutableList<WorkingArg>,
+        /** Not editable on this page; carried through so saving keeps them. */
+        val presets: List<ArgPreset>,
     ) {
         fun deepCopy(): WorkingProfile = copy(args = args.map { it.copy(options = it.options.toMutableList()) }.toMutableList())
 
@@ -538,6 +542,7 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
             label = label,
             filter = filterPattern.toRegex(),
             args = args.map { it.toArg() },
+            presets = presets,
         )
 
         companion object {
@@ -546,6 +551,7 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
                 label = p.label,
                 filterPattern = p.filter.pattern,
                 args = p.args.map { WorkingArg.from(it) }.toMutableList(),
+                presets = p.presets,
             )
         }
     }

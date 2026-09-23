@@ -40,11 +40,32 @@
                 id="cz.nihil_engine.nihil_utils_plugin.settings.args"
                 displayName="Nihil Args"/>
         <copyPastePreProcessor implementation="cz.nihil_engine.nihil_utils_plugin.assert_actions.NihilIdPasteProcessor"/>
+        <notificationGroup id="Nihil Build Targets" displayType="BALLOON"/>
+        <notificationGroup id="Nihil Asserts" displayType="BALLOON"/>
+        <!-- Hidden unless .idea/nihil_plugin.toml enables ignored_asserts -->
+        <toolWindow id="Nihil Ignored Asserts"
+                    factoryClass="cz.nihil_engine.nihil_utils_plugin.asserts.IgnoredAssertsToolWindowFactory"
+                    anchor="bottom" secondary="true" canCloseContents="false"
+                    icon="AllIcons.Debugger.Db_muted_breakpoint"/>
+        <consoleFilterProvider implementation="cz.nihil_engine.nihil_utils_plugin.console.NihilConsoleFilterProvider"/>
+        <!-- Sees program output on every console, including CLion's terminal debug console -->
+        <consoleInputFilterProvider implementation="cz.nihil_engine.nihil_utils_plugin.asserts.UserDataDirectoryInputFilterProvider"/>
+        <!-- Puts CLion's own profile combo (ExecutionTargets) behind a per-project gate -->
+        <actionConfigurationCustomizer
+                implementation="cz.nihil_engine.nihil_utils_plugin.build_targets.NativeProfileComboCustomizer"/>
     </extensions>
 
     <projectListeners>
         <listener class="cz.nihil_engine.nihil_utils_plugin.args.NihilArgsExecutionListener"
                   topic="com.intellij.execution.ExecutionListener"/>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.build_targets.BuildTargetSelectionListener"
+                  topic="com.intellij.execution.RunManagerListener"/>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.build_targets.BuildTargetSelectionListener"
+                  topic="com.intellij.execution.ExecutionTargetListener"/>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.asserts.IgnoreListDiscoveryListener"
+                  topic="com.intellij.execution.ExecutionListener"/>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.debugger.AssertBreakDebuggerListener"
+                  topic="com.intellij.xdebugger.XDebuggerManagerListener"/>
     </projectListeners>
 
     <actions>
@@ -129,47 +150,94 @@
         </group>
 
 
-        <!-- Toolbar group -->
-        <group id="Nihil.RunToolbarGroup">
+        <!-- Toolbar group: hidden unless .idea/nihil_plugin.toml enables tool_buttons or args_popup -->
+        <group id="Nihil.RunToolbarGroup"
+               class="cz.nihil_engine.nihil_utils_plugin.project.NihilRunToolbarGroup">
             <add-to-group
                     group-id="RunToolbarMainActionGroup"
                     anchor="after"
                     relative-to-action="Stop"/>
 
-            <separator/>
-            <action
-                    id="Nihil.RunDashboard"
-                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunNihilDashboardAction"
-                    text="Nihil Tools Dashboard"
-                    description="Open Nihil Tools Dashboard"/>
+            <group id="Nihil.ToolButtonsGroup"
+                   class="cz.nihil_engine.nihil_utils_plugin.project.NihilToolButtonsGroup">
+                <separator/>
+                <action
+                        id="Nihil.RunDashboard"
+                        class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunNihilDashboardAction"
+                        text="Nihil Tools Dashboard"
+                        description="Open Nihil Tools Dashboard"/>
 
-            <action
-                    id="Nihil.RunTracy"
-                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunTracyAction"
-                    text="Tracy"
-                    description="Open Tracy Profiler"/>
+                <action
+                        id="Nihil.RunTracy"
+                        class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunTracyAction"
+                        text="Tracy"
+                        description="Open Tracy Profiler"/>
 
-            <action
-                    id="Nihil.RunRenderDoc"
-                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunRenderDocAction"
-                    text="RenderDoc"
-                    description="Open RenderDoc"/>
+                <action
+                        id="Nihil.RunRenderDoc"
+                        class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunRenderDocAction"
+                        text="RenderDoc"
+                        description="Open RenderDoc"/>
 
-            <action
-                    id="Nihil.RunLogViewer"
-                    class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunNihilLogViewerAction"
-                    text="Log Viewer"
-                    description="Open Nihil Log Viewer"/>
+                <action
+                        id="Nihil.RunLogViewer"
+                        class="cz.nihil_engine.nihil_utils_plugin.tool_actions.RunNihilLogViewerAction"
+                        text="Log Viewer"
+                        description="Open Nihil Log Viewer"/>
+            </group>
 
-            <separator/>
-
-            <action
-                    id="Nihil.ShowArgsPopup"
-                    class="cz.nihil_engine.nihil_utils_plugin.args.ShowNihilArgsPopupAction"
-                    text="Nihil Args"
-                    description="Configure target-specific program arguments"
-                    icon="AllIcons.General.Settings"/>
+            <group id="Nihil.ArgsPopupGroup"
+                   class="cz.nihil_engine.nihil_utils_plugin.project.NihilArgsPopupGroup">
+                <separator/>
+                <action
+                        id="Nihil.ShowArgsPopup"
+                        class="cz.nihil_engine.nihil_utils_plugin.args.ShowNihilArgsPopupAction"
+                        text="Nihil Args"
+                        description="Configure target-specific program arguments"
+                        icon="AllIcons.General.Settings"/>
+            </group>
         </group>
 
+        <!-- Build variant x target combos, in front of CLion's profile combo (ExecutionTargets).
+             Hidden unless .idea/nihil_plugin.toml enables build_target_selector. -->
+        <group id="Nihil.BuildTargetSelectorGroup"
+               class="cz.nihil_engine.nihil_utils_plugin.project.NihilBuildTargetSelectorGroup">
+            <add-to-group
+                    group-id="ExecutionTargetsToolbarGroup"
+                    anchor="before"
+                    relative-to-action="ExecutionTargets"/>
+            <action
+                    id="Nihil.BuildVariantCombo"
+                    class="cz.nihil_engine.nihil_utils_plugin.build_targets.BuildVariantComboAction"
+                    text="Build Variant"
+                    description="Build variant (CMake profile without the target part)"/>
+            <action
+                    id="Nihil.BuildTargetCombo"
+                    class="cz.nihil_engine.nihil_utils_plugin.build_targets.BuildTargetComboAction"
+                    text="Build Target"
+                    description="Build target: Game, Editor or Tools"/>
+        </group>
+
+        <!-- Hidden unless .idea/nihil_plugin.toml enables new_module -->
+        <action id="Nihil.NewModule"
+                class="cz.nihil_engine.nihil_utils_plugin.scaffold.NewNihilModuleAction">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
+
+        <!-- Shown in the debugger toolbar while stopped on a non-fatal NihilEngine assert break -->
+        <group id="Nihil.AssertBreakGroup">
+            <add-to-group group-id="XDebugger.ToolWindow.TopToolbar3" anchor="last"/>
+            <add-to-group group-id="XDebugger.ToolWindow.TopToolbar" anchor="last"/>
+            <action id="Nihil.IgnoreAssertBreak"
+                    class="cz.nihil_engine.nihil_utils_plugin.debugger_actions.IgnoreBreakpointInstructionAction"
+                    text="Ignore Assert"
+                    description="Stop breaking on this assert for the rest of the debug session and continue"
+                    icon="AllIcons.Actions.Play_forward"/>
+            <action id="Nihil.IgnoreAssertBreakAlways"
+                    class="cz.nihil_engine.nihil_utils_plugin.debugger_actions.IgnoreAssertBreakAlwaysAction"
+                    text="Ignore Assert Every Run"
+                    description="Add this assert to ignored_asserts.txt, stop breaking on it and continue"
+                    icon="AllIcons.Debugger.Db_muted_breakpoint"/>
+        </group>
     </actions>
 </idea-plugin>

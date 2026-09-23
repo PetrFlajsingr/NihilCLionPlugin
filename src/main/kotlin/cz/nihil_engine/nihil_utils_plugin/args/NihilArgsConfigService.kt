@@ -115,23 +115,12 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
 
     fun buildCommandLineArgs(targetName: String): List<String> {
         val profile = config.findProfile(targetName) ?: return emptyList()
-        val resolvedValues = resolvedSiblingValues(profile)
+        val resolved = resolvedValues(profile, targetName)
 
         return buildList {
             for (arg in profile.args) {
                 when (arg.type) {
-                    ArgType.BOOL -> {
-                        if (resolvedValues[arg.key] == "true") {
-                            add(arg.flag)
-                        }
-                    }
-                    ArgType.SELECT, ArgType.TEXT, ArgType.PATH, ArgType.INT -> {
-                        val value = expandMacros(resolvedValues[arg.key] ?: "", resolvedValues)
-                        if (value.isNotEmpty()) {
-                            add(arg.flag)
-                            add(value)
-                        }
-                    }
+                    ArgType.BOOL -> if (getBoolValue(profile, arg)) add(arg.flag)
                     ArgType.MULTI -> {
                         val values = getMultiValue(profile, arg)
                         if (values.isNotEmpty()) {
@@ -139,8 +128,8 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
                             add(values.joinToString(arg.separator))
                         }
                     }
-                    ArgType.DERIVED -> {
-                        val value = expandMacros(arg.valueTemplate, resolvedValues)
+                    else -> {
+                        val value = resolved[arg.key]?.value.orEmpty()
                         if (value.isNotEmpty()) {
                             add(arg.flag)
                             add(value)
@@ -151,37 +140,48 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         }
     }
 
-    fun expandMacros(template: String, siblingValues: Map<String, String>): String {
-        if (!template.contains("\${")) return template
+    private fun rawValues(profile: TargetProfile): Map<String, String> =
+        profile.args.associate { arg ->
+            arg.key to when (arg.type) {
+                ArgType.BOOL -> getBoolValue(profile, arg).toString()
+                ArgType.MULTI -> getMultiValue(profile, arg).joinToString(arg.separator)
+                ArgType.DERIVED -> arg.valueTemplate
+                else -> getValue(profile, arg)
+            }
+        }
 
-        val builtins = mapOf(
-            "PROJECT_DIR" to (project.basePath ?: ""),
-        )
+    fun resolvedValues(profile: TargetProfile, targetName: String?): Map<String, ArgTemplates.Resolved> =
+        ArgTemplates.resolveAll(rawValues(profile), builtins(targetName))
 
-        return MACRO_PATTERN.replace(template) { match ->
-            val key = match.groupValues[1]
-            builtins[key] ?: siblingValues[key] ?: match.value
+    fun builtins(targetName: String?): Map<String, String> = buildMap {
+        put("PROJECT_DIR", project.basePath.orEmpty())
+        put("PROJECT_NAME", project.name)
+        if (targetName != null) put("RUN_CONFIG", targetName)
+    }
+
+    fun presets(profile: TargetProfile): List<PresetChoice> =
+        profile.presets.map { PresetChoice(it, personal = false) } +
+            NihilArgsPresetStore.getInstance(project).presets(profile.key).map { PresetChoice(it, personal = true) }
+
+    fun currentValues(profile: TargetProfile): Map<String, String> =
+        profile.args.filter { it.type != ArgType.DERIVED }.associate { it.key to getValue(profile, it) }
+
+    fun applyValues(profile: TargetProfile, values: Map<String, String>) {
+        for (arg in profile.args) {
+            if (arg.type != ArgType.DERIVED) setValue(profile, arg, values[arg.key] ?: arg.default)
         }
     }
 
-    fun resolvedSiblingValues(profile: TargetProfile): Map<String, String> {
-        return buildMap {
-            for (arg in profile.args) {
-                when (arg.type) {
-                    ArgType.BOOL -> {
-                        if (getBoolValue(profile, arg)) put(arg.key, "true")
-                    }
-                    ArgType.SELECT, ArgType.TEXT, ArgType.PATH, ArgType.INT -> {
-                        put(arg.key, getValue(profile, arg))
-                    }
-                    ArgType.MULTI -> {
-                        val values = getMultiValue(profile, arg)
-                        if (values.isNotEmpty()) put(arg.key, values.joinToString(arg.separator))
-                    }
-                    ArgType.DERIVED -> {}
-                }
-            }
+    fun matches(profile: TargetProfile, preset: ArgPreset): Boolean =
+        profile.args.filter { it.type != ArgType.DERIVED }.all { arg ->
+            normalized(arg, getValue(profile, arg)) == normalized(arg, preset.values[arg.key] ?: arg.default)
         }
+
+    private fun normalized(arg: ArgDefinition, value: String): String = when (arg.type) {
+        ArgType.BOOL -> (value.toBooleanStrictOrNull() ?: false).toString()
+        ArgType.INT -> value.trim().toIntOrNull()?.toString() ?: value
+        ArgType.MULTI -> value.split("|").filter { it.isNotEmpty() }.sorted().joinToString("|")
+        else -> value
     }
 
     override fun dispose() {
@@ -189,8 +189,6 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
     }
 
     companion object {
-        private val MACRO_PATTERN = Regex("\\$\\{(\\w+)}")
-
         fun getInstance(project: Project): NihilArgsConfigService =
             project.getService(NihilArgsConfigService::class.java)
     }

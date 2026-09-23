@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
 import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
@@ -18,15 +19,17 @@ class ShowNihilArgsPopupAction : AnAction(
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val panel = NihilArgsPanelBuilder.build(project)
+        var popup: JBPopup? = null
+        val panel = NihilArgsPanelBuilder.build(project) { popup?.pack(true, true) }
 
-        val popup = JBPopupFactory.getInstance()
+        popup = JBPopupFactory.getInstance()
             .createComponentPopupBuilder(panel, panel)
             .setTitle("Nihil Args")
             .setFocusable(true)
             .setRequestFocus(true)
             .setMovable(true)
             .setResizable(true)
+            .setCancelOnWindowDeactivation(false)
             .createPopup()
 
         val component = e.inputEvent?.component

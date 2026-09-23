@@ -1,0 +1,13 @@
+# A header-only interface library: src/<group>/<Name>, headers under Public/Nihil<Name>/.
+#
+# Placeholders: Name name_lower NAME_UPPER group description author year file_name dependencies
+# Flags:        has_dependencies
+
+[template]
+label = "Interface library"
+description = "Header-only library, no module, no sources"
+target_dir = "src/{{group}}/{{Name}}"
+register_file = "CMakeLists.txt"
+register_section = "## Interface libraries"
+register_line = "add_subdirectory(src/{{group}}/{{Name}})"
+open = ["Public/Nihil{{Name}}/{{Name}}.hpp", "CMakeLists.txt"]

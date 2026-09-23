@@ -2,35 +2,50 @@ package cz.nihil_engine.nihil_utils_plugin.args
 
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.MessageType
-import com.intellij.openapi.ui.popup.Balloon
-import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.Balloon.Position
-import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
-import cz.nihil_engine.nihil_utils_plugin.config.RunConfigExtractor
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
+import cz.nihil_engine.nihil_utils_plugin.config.RunConfigExtractor
+import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.datatransfer.StringSelection
 import javax.swing.Box
 import javax.swing.BoxLayout
+import javax.swing.DefaultComboBoxModel
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 /**
- * Builds a panel showing the args UI for the currently active run config.
- * Intended for use inside a popup — stateless, no listeners.
- *
- * Derived args are displayed as read-only greyed-out labels that update
- * live when any editable arg in the same profile changes.
+ * Builds a panel showing the args UI for the currently active run config, for use inside a popup.
  */
 object NihilArgsPanelBuilder {
 
-    fun build(project: Project): JComponent {
+    fun build(project: Project, onLayoutChanged: () -> Unit = {}): JComponent {
+        val root = JPanel(BorderLayout())
+        lateinit var rebuild: () -> Unit
+        rebuild = {
+            root.removeAll()
+            root.add(content(project, rebuild, onLayoutChanged), BorderLayout.CENTER)
+            root.revalidate()
+            root.repaint()
+            onLayoutChanged()
+        }
+        root.add(content(project, rebuild, onLayoutChanged), BorderLayout.CENTER)
+        return root
+    }
+
+    private fun content(project: Project, rebuild: () -> Unit, onLayoutChanged: () -> Unit): JComponent {
         val panel = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             border = JBUI.Borders.empty(8, 12)
@@ -53,22 +68,19 @@ object NihilArgsPanelBuilder {
             return panel
         }
 
-        // Collect derived labels so we can update them when editable args change
-        val derivedLabels = mutableListOf<Pair<ArgDefinition, JBLabel>>()
-
-        val updateDerived = {
-            val siblings = service.resolvedSiblingValues(profile)
-            for ((arg, label) in derivedLabels) {
-                label.text = service.expandMacros(arg.valueTemplate, siblings)
-            }
+        val ctx = ArgsPanelContext(project, service, profile, targetName) {
+            panel.revalidate()
+            onLayoutChanged()
         }
 
         panel.add(createHeader(profile, targetName))
         panel.add(Box.createVerticalStrut(8))
+        panel.add(createPresetBar(ctx, rebuild))
+        panel.add(Box.createVerticalStrut(8))
 
         for (arg in profile.args) {
             if (arg.type == ArgType.DERIVED) continue
-            panel.add(NihilArgRowFactory.createArgRow(service, profile, arg, project, updateDerived))
+            panel.add(NihilArgRowFactory.createArgRow(ctx, arg))
             panel.add(Box.createVerticalStrut(4))
         }
 
@@ -80,28 +92,109 @@ object NihilArgsPanelBuilder {
             })
             panel.add(Box.createVerticalStrut(4))
 
-            val siblings = service.resolvedSiblingValues(profile)
+            val resolved = ctx.resolved()
             for (arg in derivedArgs) {
-                val expanded = service.expandMacros(arg.valueTemplate, siblings)
-                val valueLabel = JBLabel(expanded).apply {
+                val valueLabel = JBLabel(resolved[arg.key]?.value.orEmpty()).apply {
                     foreground = UIUtil.getContextHelpForeground()
                 }
-                derivedLabels.add(arg to valueLabel)
+                ctx.onChange { valueLabel.text = it[arg.key]?.value.orEmpty() }
                 panel.add(NihilArgRowFactory.createLabeledRow(arg.flag, arg.valueTemplate, valueLabel))
                 panel.add(Box.createVerticalStrut(4))
             }
         }
 
         panel.add(Box.createVerticalStrut(8))
-        panel.add(createActionButtons(project, service, profile, targetName))
+        panel.add(createActionButtons(project, service, targetName))
 
         return panel
+    }
+
+    private sealed interface PresetItem {
+        data object Custom : PresetItem
+        data class Choice(val choice: PresetChoice) : PresetItem
+    }
+
+    /**
+     * Preset combo.
+     */
+    private fun createPresetBar(ctx: ArgsPanelContext, rebuild: () -> Unit): JComponent {
+        val combo = ComboBox<PresetItem>().apply {
+            renderer = SimpleListCellRenderer.create { label, value, _ ->
+                when (value) {
+                    is PresetItem.Choice -> {
+                        label.text = value.choice.preset.label + if (value.choice.personal) "  (personal)" else ""
+                    }
+                    PresetItem.Custom, null -> {
+                        label.text = "Custom"
+                        label.foreground = UIUtil.getContextHelpForeground()
+                    }
+                }
+            }
+        }
+        val delete = JButton("Delete").apply { toolTipText = "Delete this personal preset" }
+        var updating = false
+
+        fun refresh() {
+            updating = true
+            val choices = ctx.service.presets(ctx.profile)
+            val match = choices.firstOrNull { ctx.service.matches(ctx.profile, it.preset) }
+            val items = listOfNotNull(if (match == null) PresetItem.Custom else null) + choices.map { PresetItem.Choice(it) }
+            combo.model = DefaultComboBoxModel(items.toTypedArray())
+            combo.selectedItem = match?.let { PresetItem.Choice(it) } ?: PresetItem.Custom
+            combo.isEnabled = choices.isNotEmpty()
+            delete.isEnabled = match?.personal == true
+            updating = false
+        }
+        refresh()
+        ctx.onChange { refresh() }
+
+        combo.addActionListener {
+            if (updating) return@addActionListener
+            val choice = (combo.selectedItem as? PresetItem.Choice)?.choice ?: return@addActionListener
+            ctx.service.applyValues(ctx.profile, choice.preset.values)
+            rebuild()
+        }
+
+        val save = JButton("Save…").apply {
+            toolTipText = "Save the current values as a personal preset"
+            addActionListener {
+                val current = (combo.selectedItem as? PresetItem.Choice)?.choice?.takeIf { it.personal }?.preset?.label
+                val name = Messages.showInputDialog(
+                    ctx.project, "Save the current values as a personal preset:", "Save Args Preset", null,
+                    current.orEmpty(), NonBlankValidator,
+                ) ?: return@addActionListener
+                NihilArgsPresetStore.getInstance(ctx.project).save(ctx.profile.key, name.trim(), ctx.service.currentValues(ctx.profile))
+                refresh()
+            }
+        }
+        delete.addActionListener {
+            val choice = (combo.selectedItem as? PresetItem.Choice)?.choice?.takeIf { it.personal } ?: return@addActionListener
+            NihilArgsPresetStore.getInstance(ctx.project).delete(ctx.profile.key, choice.preset.key)
+            refresh()
+        }
+
+        val controls = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.X_AXIS)
+            isOpaque = false
+            add(combo)
+            add(Box.createHorizontalStrut(4))
+            add(save)
+            add(Box.createHorizontalStrut(4))
+            add(delete)
+        }
+        return NihilArgRowFactory.createLabeledRow(
+            "Preset", "Team presets come from nihil_args.toml; personal ones are saved here", controls,
+        )
+    }
+
+    private object NonBlankValidator : InputValidator {
+        override fun checkInput(inputString: String?) = !inputString.isNullOrBlank()
+        override fun canClose(inputString: String?) = checkInput(inputString)
     }
 
     private fun createActionButtons(
         project: Project,
         service: NihilArgsConfigService,
-        profile: TargetProfile,
         targetName: String,
     ): JComponent {
         val copyArgs = JButton("Copy Args").apply {

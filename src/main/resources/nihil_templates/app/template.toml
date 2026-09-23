@@ -1,0 +1,14 @@
+# An application on the Nihil app framework: src/apps/<Name>, target Nihil<Name>. nihil_application links the
+# standard set (App, Core, Common, Log, ...); `dependencies` are the extra ones.
+#
+# Placeholders: Name name_lower description author year file_name dependencies
+# Flags:        has_dependencies
+
+[template]
+label = "Application"
+description = "An app::Application with a window and a loop, staged paths.toml and config/"
+target_dir = "src/apps/{{Name}}"
+register_file = "CMakeLists.txt"
+register_section = "# Nihil test main (temporary)"
+register_line = "add_subdirectory(src/apps/{{Name}})"
+open = ["main.cpp", "CMakeLists.txt"]

@@ -50,7 +50,24 @@ object NihilArgsConfigWriter {
                     append("separator = ").append(quote(arg.separator)).append('\n')
                 }
             }
+
+            val argsByKey = profile.args.associateBy { it.key }
+            for ((key, label, values) in profile.presets) {
+                append('\n')
+                append('[').append(profile.key).append(".presets.").append(key).append(']').append('\n')
+                append("label = ").append(quote(label)).append('\n')
+                for ((argKey, value) in values) {
+                    append(argKey).append(" = ").append(presetValueLiteral(argsByKey[argKey], value)).append('\n')
+                }
+            }
         }
+    }
+
+    private fun presetValueLiteral(arg: ArgDefinition?, value: String): String = when (arg?.type) {
+        ArgType.BOOL -> if (value.equals("true", ignoreCase = true)) "true" else "false"
+        ArgType.INT -> value.toIntOrNull()?.toString() ?: quote(value)
+        ArgType.MULTI -> stringArray(value.split("|").filter { it.isNotEmpty() })
+        else -> quote(value)
     }
 
     private fun defaultLiteral(arg: ArgDefinition): String = when (arg.type) {

@@ -22,11 +22,19 @@ data class ArgDefinition(
     val separator: String = ",",
 )
 
+data class ArgPreset(
+    val key: String,
+    val label: String,
+    val values: Map<String, String>,
+)
+
 data class TargetProfile(
     val key: String,
     val label: String,
     val filter: Regex,
     val args: List<ArgDefinition>,
+    /** Team presets from nihil_args.toml, personal ones live in [NihilArgsPresetStore]. */
+    val presets: List<ArgPreset> = emptyList(),
 )
 
 data class NihilArgsConfig(

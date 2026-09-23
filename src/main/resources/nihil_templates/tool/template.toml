@@ -1,0 +1,12 @@
+# A command line tool: src/tools/Nihil<Name>, target Nihil<Name>, on NihilToolsBase's CLIToolExeBase.
+#
+# Placeholders: Name name_lower description author year file_name dependencies
+# Flags:        has_dependencies
+
+[template]
+label = "Tool"
+description = "A CLIToolExeBase command line tool with one example argument"
+target_dir = "src/tools/Nihil{{Name}}"
+register_file = "src/tools/CMakeLists.txt"
+register_line = "add_subdirectory(Nihil{{Name}})"
+open = ["main.cpp", "CMakeLists.txt"]

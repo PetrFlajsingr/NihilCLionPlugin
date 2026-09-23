@@ -1,0 +1,12 @@
+# The Catch2 test target of a library: src/tests/Nihil<Name>, target NihilTest<Name>. Only built with
+# NIHIL_ENABLE_TESTS (the Test profiles). Created together with a library.
+#
+# Placeholders: Name name_lower module namespace description author year file_name dependencies
+
+[template]
+label = "Library tests"
+description = "Catch2 test executable for the library"
+target_dir = "src/tests/Nihil{{Name}}"
+register_file = "src/tests/CMakeLists.txt"
+register_line = "add_subdirectory(Nihil{{Name}})"
+open = ["{{Name}}Tests.cpp"]

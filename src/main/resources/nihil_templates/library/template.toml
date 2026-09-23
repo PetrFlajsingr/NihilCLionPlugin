@@ -1,0 +1,18 @@
+# A NihilEngine library: src/<group>/<Name>, one C++ module, with the scaffolding from the nihil-new-library skill
+# (five config headers + dispatcher, primary interface unit, log/prof categories, AllocStatics).
+#
+# Files under files/ are rendered with {{placeholders}} (in contents and paths) and {{#if flag}} ... {{/if}} blocks.
+# A file that renders empty is not created.
+#
+# Placeholders: Name name_lower NAME_UPPER module module_file namespace group description author year file_name
+#               public_dependencies private_dependencies
+# Flags:        profiling has_public_dependencies has_private_dependencies
+
+[template]
+label = "Library"
+description = "A C++ module library with config headers, log and profiling categories"
+target_dir = "src/{{group}}/{{Name}}"
+register_file = "CMakeLists.txt"
+register_section = "## Normal libraries"
+register_line = "add_subdirectory(src/{{group}}/{{Name}})"
+open = ["Public/Nihil{{Name}}/{{module_file}}.ixx", "CMakeLists.txt"]

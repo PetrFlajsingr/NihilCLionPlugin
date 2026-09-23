@@ -1,5 +1,7 @@
 package cz.nihil_engine.nihil_utils_plugin.asserts
 
+import com.intellij.execution.ExecutionTargetListener
+import com.intellij.execution.ExecutionTargetManager
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
@@ -51,6 +53,10 @@ class IgnoredAssertGutter(private val project: Project) : Disposable {
         }, this)
         project.messageBus.connect(this).apply {
             subscribe(IgnoreListService.TOPIC, IgnoreListService.Listener { updateAll() })
+            // Switching the CMake profile can switch the build target, and with it which lists apply.
+            subscribe(ExecutionTargetManager.TOPIC, ExecutionTargetListener {
+                ApplicationManager.getApplication().invokeLater({ updateAll() }, project.disposed)
+            })
             subscribe(NihilProjectConfigService.TOPIC, NihilProjectConfigService.Listener {
                 ApplicationManager.getApplication().invokeLater({ updateAll() }, project.disposed)
             })
@@ -89,11 +95,11 @@ class IgnoredAssertGutter(private val project: Project) : Disposable {
         state.highlighters = emptyList()
 
         if (!NihilProjectConfigService.isEnabled(project, NihilFeature.IGNORED_ASSERTS)) return
-        val service = IgnoreListService.getInstance(project)
-        if (service.lists.all { it.ids.isEmpty() }) return
+        val active = IgnoreListService.getInstance(project).activeLists()
+        if (active.all { it.ids.isEmpty() }) return
 
         state.highlighters = AssertSite.findAll(editor.document.immutableCharSequence, AssertMacroService.getInstance(project).macros).mapNotNull { site ->
-            val lists = service.listsIgnoring(site.id)
+            val lists = active.filter { site.id in it.ids }
             if (lists.isEmpty()) return@mapNotNull null
             editor.markupModel.addLineHighlighter(site.line, HighlighterLayer.ADDITIONAL_SYNTAX, null).apply {
                 gutterIconRenderer = IgnoredAssertIcon(project, site, lists)
@@ -128,8 +134,8 @@ private class IgnoredAssertIcon(
     override fun getClickAction(): AnAction = object : DumbAwareAction() {
         override fun actionPerformed(e: AnActionEvent) {
             val group = DefaultActionGroup().apply {
-                add(DumbAwareAction.create(if (lists.size == 1) "Stop Ignoring ${site.idText}" else "Stop Ignoring ${site.idText} Everywhere") {
-                    IgnoreListService.getInstance(project).unignore(site.id)
+                add(DumbAwareAction.create(if (lists.size == 1) "Stop Ignoring ${site.idText}" else "Stop Ignoring ${site.idText} in All ${lists.size} Lists") {
+                    IgnoreListService.getInstance(project).unignore(site.id, lists)
                 })
                 if (lists.size > 1) {
                     for (list in lists) {

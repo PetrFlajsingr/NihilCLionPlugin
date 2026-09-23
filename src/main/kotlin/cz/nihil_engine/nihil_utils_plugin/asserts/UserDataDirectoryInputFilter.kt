@@ -41,7 +41,8 @@ private class UserDataDirectoryInputFilter(private val project: Project, private
         if (!line.contains(MARKER)) return
         val dir = IgnoreListService.USER_DATA_DIR.find(line)?.groupValues?.get(1) ?: return
         if (NihilProjectConfigService.isEnabled(project, NihilFeature.IGNORED_ASSERTS)) {
-            IgnoreListService.getInstance(project).addDirectory(dir)
+            val service = IgnoreListService.getInstance(project)
+            service.addDirectory(dir, service.activeTarget()) // logged at startup, so still the target it runs under
         }
         AssertBreakService.getInstance(project).userDataDirectoryLogged(console, dir)
     }

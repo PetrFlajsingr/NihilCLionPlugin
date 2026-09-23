@@ -21,13 +21,19 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.annotations.XCollection
+import cz.nihil_engine.nihil_utils_plugin.build_targets.BuildTargetService
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-data class IgnoreList(val directory: String, val ids: Set<Long>) {
+/** [target]: the build target the directory's app last ran under, or null when not seen run since this was tracked. */
+data class IgnoreList(val directory: String, val ids: Set<Long>, val target: String? = null) {
     val file: File get() = File(directory, IgnoreListService.FILE_NAME)
     /** The directory's name, e.g. "Game" for `.../NihilEngine/Game`. */
     val name: String get() = File(directory).name
+
+    /** Whether this list applies under [activeTarget]; a list with no recorded target goes by its directory's name. */
+    fun appliesTo(activeTarget: String?): Boolean =
+        activeTarget == null || (target ?: name).equals(activeTarget, ignoreCase = true)
 }
 
 @Service(Service.Level.PROJECT)
@@ -37,6 +43,9 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
     class ListsState {
         @XCollection(style = XCollection.Style.v2)
         var directories: MutableList<String> = mutableListOf()
+
+        /** Directory -> the build target its app last ran under. */
+        var targets: MutableMap<String, String> = mutableMapOf()
     }
 
     fun interface Listener {
@@ -71,11 +80,16 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
 
     fun directories(): List<String> = synchronized(this) { state.directories.toList() }
 
-    fun addDirectory(directory: String) {
+    /** [target]: the build target the app writing to [directory] runs under, recorded when known. */
+    fun addDirectory(directory: String, target: String? = null) {
         val dir = FileUtil.toSystemIndependentName(directory).trimEnd('/')
-        val added = synchronized(this) {
-            if (state.directories.any { FileUtil.pathsEqual(it, dir) }) false else state.directories.add(dir)
+        val (added, retargeted) = synchronized(this) {
+            val existing = state.directories.firstOrNull { FileUtil.pathsEqual(it, dir) }
+            val key = existing ?: dir
+            val retargeted = target != null && state.targets.put(key, target) != target
+            (existing == null && state.directories.add(dir)) to retargeted
         }
+        if (retargeted) log.info("Ignore list directory $dir belongs to build target $target")
         if (added) {
             log.info("Remembering ignore list directory $dir")
             watch(dir)
@@ -97,6 +111,8 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
     fun watchOutput(handler: ProcessHandler) {
         if (handler.getUserData(WATCHED_KEY) == true) return
         handler.putUserData(WATCHED_KEY, true)
+        // Called as the process starts, so this is the target it was built and launched for.
+        val target = activeTarget()
         handler.addProcessListener(object : ProcessListener {
             @Volatile private var found = false
 
@@ -104,7 +120,7 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
                 if (found) return
                 USER_DATA_DIR.find(event.text)?.let {
                     found = true
-                    addDirectory(it.groupValues[1])
+                    addDirectory(it.groupValues[1], target)
                 }
             }
 
@@ -113,20 +129,31 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
     }
 
     fun removeDirectory(directory: String) {
-        synchronized(this) { state.directories.removeIf { FileUtil.pathsEqual(it, directory) } }
+        synchronized(this) {
+            state.directories.removeIf { FileUtil.pathsEqual(it, directory) }
+            state.targets.keys.removeIf { FileUtil.pathsEqual(it, directory) }
+        }
         watches.remove(directory)?.let { LocalFileSystem.getInstance().removeWatchedRoot(it) }
         reloadAsync(refreshVfs = false)
     }
 
     fun listsIgnoring(id: Long): List<IgnoreList> = lists.filter { id in it.ids }
 
+    /** The active CMake profile's build target, or null when the profile isn't one of the Nihil targets. */
+    fun activeTarget(): String? = BuildTargetService.getInstance(project).current().entry?.target
+
+    /** The lists that apply to the active build target. */
+    fun activeLists(): List<IgnoreList> = activeTarget().let { target -> lists.filter { it.appliesTo(target) } }
+
     fun ignore(id: Long, directory: String): String? {
         addDirectory(directory)
         return edit(File(directory, FILE_NAME)) { IgnoreListFormat.withAdded(it, id) }
     }
 
-    fun unignore(id: Long, list: IgnoreList? = null): List<String> =
-        (if (list != null) listOf(list) else listsIgnoring(id)).mapNotNull { l ->
+    fun unignore(id: Long, list: IgnoreList? = null): List<String> = unignore(id, if (list != null) listOf(list) else listsIgnoring(id))
+
+    fun unignore(id: Long, lists: List<IgnoreList>): List<String> =
+        lists.mapNotNull { l ->
             edit(l.file) { IgnoreListFormat.withRemoved(it, id) }
         }
 
@@ -146,6 +173,7 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
     fun reloadAsync(refreshVfs: Boolean) {
         reloads.execute {
             val dirs = directories()
+            val targets = synchronized(this) { state.targets.toMap() }
             val read = dirs.map { dir ->
                 val file = File(dir, FILE_NAME)
                 val ids = try {
@@ -154,7 +182,7 @@ class IgnoreListService(private val project: Project) : PersistentStateComponent
                     log.warn("Failed to read $file", e)
                     emptySet()
                 }
-                IgnoreList(dir, ids)
+                IgnoreList(dir, ids, targets[dir])
             }
             if (refreshVfs) {
                 val lfs = LocalFileSystem.getInstance()

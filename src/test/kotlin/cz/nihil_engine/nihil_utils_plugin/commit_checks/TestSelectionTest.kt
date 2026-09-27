@@ -90,6 +90,25 @@ class TestSelectionTest {
     }
 
     @Test
+    fun `a target two libraries share runs once, on the union of their inputs`() {
+        val rhi = File("src/render/RHI")
+        val vulkan = File("src/render/RHI/Backends/Vulkan")
+        val shared = File("src/tests/LoggerStartup.cpp")
+        val selection = listOf(
+            LibraryTests("RHI", listOf("NihilTestRHI_d3d12", "NihilTestRHI_vulkan"), listOf(rhi, File("src/tests/NihilRHI"), shared)),
+            LibraryTests("RHI.Vulkan", listOf("NihilTestRHI_vulkan"), listOf(vulkan, shared)),
+        )
+        val union = listOf(rhi, vulkan, File("src/tests/NihilRHI"), shared).sortedBy { it.path }
+
+        val inputs = TestSelection.inputsByTarget(selection)
+        assertEquals(listOf("NihilTestRHI_d3d12", "NihilTestRHI_vulkan"), inputs.keys.toList())
+        assertEquals(selection[0].inputs.sortedBy { it.path }, inputs.getValue("NihilTestRHI_d3d12"))
+        assertEquals(union, inputs.getValue("NihilTestRHI_vulkan"))
+        // Stable whichever library comes first, so the cache key doesn't depend on selection order
+        assertEquals(union, TestSelection.inputsByTarget(selection.reversed()).getValue("NihilTestRHI_vulkan"))
+    }
+
+    @Test
     fun `library of a target`() {
         assertEquals("RDG", TestSelection.libraryOf("NihilTestRDG_vulkan", emptyMap()))
         assertEquals("Common", TestSelection.libraryOf("NihilTestCommon", emptyMap()))

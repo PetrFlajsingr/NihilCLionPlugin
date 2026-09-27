@@ -114,7 +114,8 @@ class NihilTestsCheckinHandler(private val panel: CheckinProjectPanel) : Checkin
             is Outcome.Ran -> {
                 val withUncommitted = librariesWithUncommittedChanges(selection, changed)
                 setTrailers(outcome.libraries.map { it.trailer(tree.profile, it.library.library in withUncommitted) })
-                val failed = outcome.libraries.flatMap { lib -> lib.runs.filter { it.status != TestStatus.PASSED } }
+                // A target shared by two libraries is one run in both outcomes
+                val failed = outcome.libraries.flatMap { lib -> lib.runs.filter { it.status != TestStatus.PASSED } }.distinct()
                 if (failed.isEmpty()) {
                     null
                 } else {
@@ -148,9 +149,9 @@ class NihilTestsCheckinHandler(private val panel: CheckinProjectPanel) : Checkin
     private fun runTests(tree: TestTree, selection: List<LibraryTests>, executables: Map<String, File>, indicator: ProgressIndicator): Outcome {
         val cache = TestPassCache.getInstance(project)
         indicator.text = "Checking Nihil test inputs"
-        val hashes = selection.flatMap { lib -> lib.targets.map { it to InputHash.of(lib.inputs, "${tree.profile}|$it") } }.toMap()
+        val hashes = TestSelection.inputsByTarget(selection).mapValues { (target, inputs) -> InputHash.of(inputs, "${tree.profile}|$target") }
         val cached = hashes.mapNotNull { (target, hash) -> cache.get(target, hash)?.let { target to it } }.toMap()
-        val toRun = selection.flatMap { it.targets }.filter { it !in cached }
+        val toRun = hashes.keys.filter { it !in cached }
 
         val runner = TestRunner(tree, indicator)
         if (toRun.isNotEmpty()) {

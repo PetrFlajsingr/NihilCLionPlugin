@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
@@ -47,11 +46,6 @@ class CVarsToolWindowFactory : ToolWindowFactory, DumbAware {
         NihilProjectConfigService.isEnabled(project, NihilFeature.CVARS)
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        project.messageBus.connect(toolWindow.disposable).subscribe(NihilProjectConfigService.TOPIC, NihilProjectConfigService.Listener {
-            ApplicationManager.getApplication().invokeLater({
-                toolWindow.isAvailable = NihilProjectConfigService.isEnabled(project, NihilFeature.CVARS)
-            }, project.disposed)
-        })
         val panel = CVarsPanel(project, toolWindow, toolWindow.disposable)
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false).also { it.putUserData(PANEL_KEY, panel) })
     }

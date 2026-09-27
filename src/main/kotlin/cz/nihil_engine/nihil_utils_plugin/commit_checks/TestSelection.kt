@@ -46,6 +46,18 @@ object TestSelection {
         }
     }
 
+    /**
+     * Each selected target once, in selection order, with the inputs of every library that lists it (sorted, no
+     * duplicates): a target two libraries share is built and run once, and its cached pass has to cover both.
+     */
+    fun inputsByTarget(selection: List<LibraryTests>): Map<String, List<File>> {
+        val inputs = LinkedHashMap<String, MutableSet<File>>()
+        for (library in selection) {
+            for (target in library.targets) inputs.getOrPut(target) { HashSet() } += library.inputs
+        }
+        return inputs.mapValues { (_, files) -> files.sortedBy { it.path } }
+    }
+
     data class Touched(
         val libraries: Set<String>,
         /** The directory each library was found in, from walking up from a changed file. */

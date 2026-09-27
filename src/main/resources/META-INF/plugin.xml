@@ -78,6 +78,8 @@
     </extensions>
 
     <projectListeners>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.project.NihilToolWindowsAvailability"
+                  topic="cz.nihil_engine.nihil_utils_plugin.project.NihilProjectConfigService$Listener"/>
         <listener class="cz.nihil_engine.nihil_utils_plugin.args.NihilArgsExecutionListener"
                   topic="com.intellij.execution.ExecutionListener"/>
         <listener class="cz.nihil_engine.nihil_utils_plugin.build_targets.BuildTargetSelectionListener"

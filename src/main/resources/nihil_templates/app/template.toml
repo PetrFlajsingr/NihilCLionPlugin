@@ -9,6 +9,6 @@ label = "Application"
 description = "An app::Application with a window and a loop, staged paths.toml and config/"
 target_dir = "src/apps/{{Name}}"
 register_file = "CMakeLists.txt"
-register_section = "# Nihil test main (temporary)"
+register_section = "if (NOT NIHIL_ENABLE_TESTS)"
 register_line = "add_subdirectory(src/apps/{{Name}})"
 open = ["main.cpp", "CMakeLists.txt"]

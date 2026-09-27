@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -41,11 +40,6 @@ class IgnoredAssertsToolWindowFactory : ToolWindowFactory, DumbAware {
         NihilProjectConfigService.isEnabled(project, NihilFeature.IGNORED_ASSERTS)
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        project.messageBus.connect(toolWindow.disposable).subscribe(NihilProjectConfigService.TOPIC, NihilProjectConfigService.Listener {
-            ApplicationManager.getApplication().invokeLater({
-                toolWindow.isAvailable = NihilProjectConfigService.isEnabled(project, NihilFeature.IGNORED_ASSERTS)
-            }, project.disposed)
-        })
         val panel = IgnoredAssertsPanel(project, toolWindow.disposable)
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false))
     }

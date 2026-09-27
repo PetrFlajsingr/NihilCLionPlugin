@@ -48,11 +48,6 @@ class FeatureFlagsToolWindowFactory : ToolWindowFactory, DumbAware {
         NihilProjectConfigService.isEnabled(project, NihilFeature.FEATURE_FLAGS)
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        project.messageBus.connect(toolWindow.disposable).subscribe(NihilProjectConfigService.TOPIC, NihilProjectConfigService.Listener {
-            ApplicationManager.getApplication().invokeLater({
-                toolWindow.isAvailable = NihilProjectConfigService.isEnabled(project, NihilFeature.FEATURE_FLAGS)
-            }, project.disposed)
-        })
         val panel = FeatureFlagsPanel(project, toolWindow.disposable)
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(panel, "", false).also {
             it.putUserData(PANEL_KEY, panel)

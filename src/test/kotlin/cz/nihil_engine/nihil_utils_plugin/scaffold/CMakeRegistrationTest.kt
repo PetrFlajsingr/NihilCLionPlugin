@@ -1,8 +1,10 @@
 package cz.nihil_engine.nihil_utils_plugin.scaffold
 
+import cz.nihil_engine.nihil_utils_plugin.util.SimpleToml
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class CMakeRegistrationTest {
@@ -21,7 +23,6 @@ class CMakeRegistrationTest {
 
         add_subdirectory(src/framework/App)
 
-        # Nihil test main (temporary)
         if (NOT NIHIL_ENABLE_TESTS)
             add_subdirectory(src/apps/TestApps)
             add_subdirectory(src/apps/SampleApp)
@@ -44,9 +45,13 @@ class CMakeRegistrationTest {
     }
 
     @Test
-    fun `app goes into the indented apps block`() {
-        val r = CMakeRegistration.insert(root, "add_subdirectory(src/apps/Viewer)", "# Nihil test main (temporary)")!!
+    fun `app goes into the indented apps block, with the bundled template's section`() {
+        val manifest = ScaffoldTemplates.bundledEntries(ScaffoldKind.entries.single { it.id == "app" }).getValue("template.toml")
+        val section = SimpleToml.parse(manifest.lines()).getValue("template")["register_section"] as String
+        val r = CMakeRegistration.insert(root, "add_subdirectory(src/apps/Viewer)", section)!!
+        assertTrue(r.placed)
         assertEquals("    add_subdirectory(src/apps/Viewer)", linesAfter(r.text, "    add_subdirectory(src/apps/SampleApp)"))
+        assertEquals("endif ()", linesAfter(r.text, "    add_subdirectory(src/apps/Viewer)"))
     }
 
     @Test

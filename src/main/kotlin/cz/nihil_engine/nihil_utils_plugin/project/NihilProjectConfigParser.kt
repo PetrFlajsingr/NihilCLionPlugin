@@ -18,6 +18,16 @@ import java.io.File
  * targets = ["Game", "Editor", "Tools"]
  * default_target = "Game"
  * profile_name = "{variant} {target}"
+ *
+ * [commit_tests]
+ * profile = "Test (release)"
+ *
+ * [commit_tests.targets]   # overrides the NihilTest<Name> convention per library
+ * RDG = ["NihilTestRDG_vulkan"]
+ *
+ * [cvars]
+ * port = 8344                # the app's console control server
+ * poll_interval_ms = 2000
  * ```
  */
 object NihilProjectConfigParser {
@@ -56,10 +66,40 @@ object NihilProjectConfigParser {
             profileName = defaults.profileName
         }
 
+        val ct = tables["commit_tests"].orEmpty()
+        val testProfile = (ct["profile"] as? String)?.takeIf { it.isNotBlank() } ?: CommitTestsConfig().profile
+        val testTargets = tables["commit_tests.targets"].orEmpty().mapNotNull { (library, value) ->
+            val list = value as? List<*>
+            if (list == null) {
+                problems += "[commit_tests.targets] $library: expected an array of target names"
+                null
+            } else {
+                library to list.map { it.toString() }.filter { it.isNotBlank() }
+            }
+        }.toMap()
+
+        val cvarDefaults = CVarsConfig()
+        val cv = tables["cvars"].orEmpty()
+        fun intIn(key: String, range: IntRange, default: Int): Int {
+            val raw = cv[key] ?: return default
+            val value = raw.toString().replace("_", "").toIntOrNull()
+            if (value == null || value !in range) {
+                problems += "[cvars] $key: expected a number in ${range.first}..${range.last}; using $default"
+                return default
+            }
+            return value
+        }
+        val cvars = CVarsConfig(
+            port = intIn("port", 1..65535, cvarDefaults.port),
+            pollIntervalMs = intIn("poll_interval_ms", 250..60_000, cvarDefaults.pollIntervalMs),
+        )
+
         return NihilProjectConfig(
             present = true,
             features = features,
             buildTargets = BuildTargetsConfig(cmakeVariable, targets, defaultTarget, profileName),
+            commitTests = CommitTestsConfig(testProfile, testTargets),
+            cvars = cvars,
             problems = problems,
         )
     }

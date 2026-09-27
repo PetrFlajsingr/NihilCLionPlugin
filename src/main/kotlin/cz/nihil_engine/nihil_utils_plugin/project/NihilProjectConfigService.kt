@@ -1,11 +1,13 @@
 package cz.nihil_engine.nihil_utils_plugin.project
 
 import com.intellij.ide.ActivityTracker
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
@@ -25,7 +27,7 @@ class NihilProjectConfigService(private val project: Project) : Disposable {
     var config: NihilProjectConfig = NihilProjectConfig.ABSENT
         private set
 
-    private val configFile: File
+    val configFile: File
         get() = File(project.basePath ?: "", ".idea/$FILE_NAME")
 
     init {
@@ -36,18 +38,34 @@ class NihilProjectConfigService(private val project: Project) : Disposable {
             object : BulkFileListener {
                 override fun after(events: List<VFileEvent>) {
                     val path = FileUtil.toSystemIndependentName(configFile.path)
-                    if (events.any { FileUtil.pathsEqual(it.path, path) }) {
-                        reload()
-                        // Toolbars and menus pick up the new feature set on their next update.
-                        ActivityTracker.getInstance().inc()
-                        project.messageBus.syncPublisher(TOPIC).configChanged()
-                    }
+                    if (events.any { FileUtil.pathsEqual(it.path, path) }) changed()
                 }
             }
         )
     }
 
     fun isEnabled(feature: NihilFeature): Boolean = config.isEnabled(feature)
+
+    /** The file's current text, or null when the project hasn't opted in yet. */
+    fun readText(): String? = configFile.takeIf { it.isFile }?.readText()
+
+    /** Writes [newConfig] into the file, creating it when missing; hand-written comments and unknown keys stay. */
+    fun save(newConfig: NihilProjectConfig) {
+        val file = configFile
+        file.parentFile?.mkdirs()
+        file.writeText(NihilProjectConfigWriter.update(readText(), newConfig))
+        changed()
+        ApplicationManager.getApplication().invokeLater {
+            LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
+        }
+    }
+
+    private fun changed() {
+        reload()
+        // Toolbars and menus pick up the new feature set on their next update.
+        ActivityTracker.getInstance().inc()
+        project.messageBus.syncPublisher(TOPIC).configChanged()
+    }
 
     private fun reload() {
         config = try {

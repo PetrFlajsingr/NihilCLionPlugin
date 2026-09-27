@@ -10,14 +10,19 @@ import com.intellij.psi.search.GlobalSearchScope
 import cz.nihil_engine.nihil_utils_plugin.asserts.AssertLocator
 import cz.nihil_engine.nihil_utils_plugin.asserts.AssertKind
 import cz.nihil_engine.nihil_utils_plugin.asserts.AssertSite
+import cz.nihil_engine.nihil_utils_plugin.cvars.CVarConsoleFilter
 import cz.nihil_engine.nihil_utils_plugin.project.NihilFeature
 import cz.nihil_engine.nihil_utils_plugin.project.NihilProjectConfigService
 
-/** Adds [NihilConsoleFilter] to run and debug consoles of projects that enabled `console_links`. */
+/**
+ * Adds [NihilConsoleFilter] to run and debug consoles of projects that enabled `console_links`, and
+ * [CVarConsoleFilter] (cvar names) to those that enabled `cvars`.
+ */
 class NihilConsoleFilterProvider : ConsoleDependentFilterProvider() {
-    override fun getDefaultFilters(consoleView: ConsoleView, project: Project, scope: GlobalSearchScope): Array<Filter> =
-        if (NihilProjectConfigService.isEnabled(project, NihilFeature.CONSOLE_LINKS)) arrayOf(NihilConsoleFilter(project))
-        else Filter.EMPTY_ARRAY
+    override fun getDefaultFilters(consoleView: ConsoleView, project: Project, scope: GlobalSearchScope): Array<Filter> = listOfNotNull(
+        NihilConsoleFilter(project).takeIf { NihilProjectConfigService.isEnabled(project, NihilFeature.CONSOLE_LINKS) },
+        CVarConsoleFilter(project).takeIf { NihilProjectConfigService.isEnabled(project, NihilFeature.CVARS) },
+    ).toTypedArray()
 }
 
 /**

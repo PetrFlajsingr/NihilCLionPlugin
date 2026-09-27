@@ -23,6 +23,7 @@
     <depends>com.intellij.modules.cpp-plugin-capable</depends>
     <depends>com.intellij.modules.run.targets</depends>
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.vcs</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
@@ -39,6 +40,11 @@
                 instance="cz.nihil_engine.nihil_utils_plugin.settings.NihilArgsSettingsConfigurable"
                 id="cz.nihil_engine.nihil_utils_plugin.settings.args"
                 displayName="Nihil Args"/>
+        <projectConfigurable
+                parentId="cz.nihil_engine.nihil_utils_plugin.settings"
+                instance="cz.nihil_engine.nihil_utils_plugin.settings.NihilProjectSettingsConfigurable"
+                id="cz.nihil_engine.nihil_utils_plugin.settings.project"
+                displayName="Nihil Project"/>
         <copyPastePreProcessor implementation="cz.nihil_engine.nihil_utils_plugin.assert_actions.NihilIdPasteProcessor"/>
         <notificationGroup id="Nihil Build Targets" displayType="BALLOON"/>
         <notificationGroup id="Nihil Asserts" displayType="BALLOON"/>
@@ -53,6 +59,22 @@
         <!-- Puts CLion's own profile combo (ExecutionTargets) behind a per-project gate -->
         <actionConfigurationCustomizer
                 implementation="cz.nihil_engine.nihil_utils_plugin.build_targets.NativeProfileComboCustomizer"/>
+        <fileBasedIndex implementation="cz.nihil_engine.nihil_utils_plugin.asserts.AssertIdIndex"/>
+        <fileBasedIndex implementation="cz.nihil_engine.nihil_utils_plugin.feature_flags.FeatureFlagIndex"/>
+        <fileBasedIndex implementation="cz.nihil_engine.nihil_utils_plugin.cvars.CVarIndex"/>
+        <!-- Hidden unless .idea/nihil_plugin.toml enables cvars -->
+        <toolWindow id="Nihil Console Variables"
+                    factoryClass="cz.nihil_engine.nihil_utils_plugin.cvars.CVarsToolWindowFactory"
+                    anchor="bottom" secondary="true" canCloseContents="false"
+                    icon="AllIcons.Debugger.Console"/>
+        <!-- Hidden unless .idea/nihil_plugin.toml enables feature_flags -->
+        <toolWindow id="Nihil Feature Flags"
+                    factoryClass="cz.nihil_engine.nihil_utils_plugin.feature_flags.FeatureFlagsToolWindowFactory"
+                    anchor="bottom" secondary="true" canCloseContents="false"
+                    icon="AllIcons.Nodes.Parameter"/>
+        <!-- Commit checks: inactive unless .idea/nihil_plugin.toml enables commit_tests / commit_assert_ids -->
+        <checkinHandlerFactory implementation="cz.nihil_engine.nihil_utils_plugin.commit_checks.NihilTestsCheckinHandlerFactory"/>
+        <checkinHandlerFactory implementation="cz.nihil_engine.nihil_utils_plugin.commit_checks.DuplicateAssertIdCheckinHandlerFactory"/>
     </extensions>
 
     <projectListeners>
@@ -63,6 +85,8 @@
         <listener class="cz.nihil_engine.nihil_utils_plugin.build_targets.BuildTargetSelectionListener"
                   topic="com.intellij.execution.ExecutionTargetListener"/>
         <listener class="cz.nihil_engine.nihil_utils_plugin.asserts.IgnoreListDiscoveryListener"
+                  topic="com.intellij.execution.ExecutionListener"/>
+        <listener class="cz.nihil_engine.nihil_utils_plugin.cvars.CVarExecutionListener"
                   topic="com.intellij.execution.ExecutionListener"/>
         <listener class="cz.nihil_engine.nihil_utils_plugin.debugger.AssertBreakDebuggerListener"
                   topic="com.intellij.xdebugger.XDebuggerManagerListener"/>
@@ -147,6 +171,16 @@
                     text="Go to assert by ID..."
                     description="Find and navigate to an assert by its hex ID">
             </action>
+            <!-- Hidden unless .idea/nihil_plugin.toml enables feature_flags -->
+            <action id="Nihil.ShowFeatureFlags"
+                    class="cz.nihil_engine.nihil_utils_plugin.feature_flags.ShowFeatureFlagsAction"
+                    text="Feature Flag Matrix"
+                    description="Every NIHIL_IS_ENABLED flag in every build type, with where each value comes from"/>
+            <!-- Hidden unless .idea/nihil_plugin.toml enables cvars -->
+            <action id="Nihil.GoToCVar"
+                    class="cz.nihil_engine.nihil_utils_plugin.cvars.GoToCVarAction"
+                    text="Go to cvar by name..."
+                    description="Find a console variable or command by name and open its declaration"/>
         </group>
 
 

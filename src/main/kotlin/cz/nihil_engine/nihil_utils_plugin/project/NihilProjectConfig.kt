@@ -14,6 +14,14 @@ enum class NihilFeature(val key: String) {
     IGNORED_ASSERTS("ignored_asserts"),
     /** File | New > Nihil Library, App or Tool, from the templates in .idea/nihil_templates. */
     NEW_MODULE("new_module"),
+    /** Commit check: build and run the tests of every library the commit touches. */
+    COMMIT_TESTS("commit_tests"),
+    /** Commit check: block assert IDs that the commit duplicates. */
+    COMMIT_ASSERT_IDS("commit_assert_ids"),
+    /** Inlays at NIHIL_IS_ENABLED(X) with X's value in every build type, and a flag matrix tool window. */
+    FEATURE_FLAGS("feature_flags"),
+    /** Console variable index and navigation, plus live values from a running app's console control server. */
+    CVARS("cvars"),
 }
 
 data class BuildTargetsConfig(
@@ -26,11 +34,27 @@ data class BuildTargetsConfig(
     val profileName: String = "{variant} {target}",
 )
 
+data class CommitTestsConfig(
+    /** CMake profile the tests are built and run with. */
+    val profile: String = "Test (release)",
+    /** Library name -> test targets, replacing the `NihilTest<Name>` convention for that library. */
+    val targets: Map<String, List<String>> = emptyMap(),
+)
+
+data class CVarsConfig(
+    /** TCP port of the app's console control server (`AppConfig::consoleControlPort`). */
+    val port: Int = 8344,
+    /** How often live values are re-listed while connected and shown; the server doesn't push changes. */
+    val pollIntervalMs: Int = 2000,
+)
+
 data class NihilProjectConfig(
     /** False when `.idea/nihil_plugin.toml` doesn't exist; every feature is then off. */
     val present: Boolean,
     val features: Set<NihilFeature>,
     val buildTargets: BuildTargetsConfig,
+    val commitTests: CommitTestsConfig = CommitTestsConfig(),
+    val cvars: CVarsConfig = CVarsConfig(),
     /** Problems found while reading the file, shown to the user where the feature is used. */
     val problems: List<String> = emptyList(),
 ) {

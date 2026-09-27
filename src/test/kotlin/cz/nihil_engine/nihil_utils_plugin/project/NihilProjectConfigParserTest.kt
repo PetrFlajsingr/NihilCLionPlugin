@@ -67,4 +67,58 @@ class NihilProjectConfigParserTest {
         assertEquals("{variant} {target}", config.buildTargets.profileName)
         assertEquals(4, config.problems.size)
     }
+
+    @Test
+    fun `commit tests profile and target overrides`() {
+        val config = parse(
+            """
+            [features]
+            commit_tests = true
+            commit_assert_ids = true
+            [commit_tests]
+            profile = "Test (debug)"
+            [commit_tests.targets]
+            RDG = ["NihilTestRDG_vulkan"]
+            Lua = []
+            Bad = "NihilTestBad"
+            """.trimIndent()
+        )
+        assertTrue(config.isEnabled(NihilFeature.COMMIT_TESTS))
+        assertTrue(config.isEnabled(NihilFeature.COMMIT_ASSERT_IDS))
+        assertEquals("Test (debug)", config.commitTests.profile)
+        assertEquals(mapOf("RDG" to listOf("NihilTestRDG_vulkan"), "Lua" to emptyList()), config.commitTests.targets)
+        assertEquals(1, config.problems.size)
+    }
+
+    @Test
+    fun `commit tests default to the release test profile`() {
+        assertEquals(CommitTestsConfig(), parse("").commitTests)
+        assertEquals("Test (release)", CommitTestsConfig().profile)
+    }
+
+    @Test
+    fun `feature flags and cvars with port and poll interval`() {
+        val config = parse(
+            """
+            [features]
+            feature_flags = true
+            cvars = true
+            [cvars]
+            port = 9000
+            poll_interval_ms = 5_000
+            """.trimIndent()
+        )
+        assertTrue(config.isEnabled(NihilFeature.FEATURE_FLAGS))
+        assertTrue(config.isEnabled(NihilFeature.CVARS))
+        assertEquals(CVarsConfig(9000, 5000), config.cvars)
+        assertEquals(emptyList<String>(), config.problems)
+    }
+
+    @Test
+    fun `bad cvar numbers fall back to the defaults`() {
+        val config = parse("[cvars]\nport = 70000\npoll_interval_ms = often\n")
+        assertEquals(CVarsConfig(), config.cvars)
+        assertEquals(2, config.problems.size)
+        assertEquals(CVarsConfig(), parse("").cvars)
+    }
 }

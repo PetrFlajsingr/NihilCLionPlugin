@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import cz.nihil_engine.nihil_utils_plugin.project.NihilEngineDir
 import cz.nihil_engine.nihil_utils_plugin.settings.NihilPluginSettings
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -32,10 +33,10 @@ abstract class RunToolAction(
             return
         }
 
-        val cmd = listOf("python", "tools/tool_runner.py", toolArg) + getExtraArgs(e)
+        val script = File(NihilEngineDir.of(project), "tools/tool_runner.py")
+        val cmd = listOf("python", script.path, toolArg) + getExtraArgs(e)
         if (debug) {
             log.info("[$toolArg] launching: $cmd in $basePath")
-            val script = File(basePath, "tools/tool_runner.py")
             if (!script.exists()) log.warn("[$toolArg] script not found: ${script.absolutePath}")
         }
         try {

@@ -9,6 +9,7 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
 import com.jetbrains.cidr.cpp.toolchains.CPPEnvironment
 import com.jetbrains.cidr.lang.toolchains.CidrToolEnvironment
@@ -27,10 +28,19 @@ class TestTree(val profile: String, val buildDir: File, val cmake: String, priva
     }
 
     companion object {
-        /** Null with a reason when [profile] isn't a loaded CMake profile. */
+        /**
+         * Null with a reason when [profile] isn't a loaded CMake profile. [profile] matches a profile's name or,
+         * for a preset profile, its display name (`Test (release)` for the `test-release` preset).
+         */
         fun resolve(project: Project, profile: String): Pair<TestTree?, String?> {
-            val info = CMakeWorkspace.getInstance(project).getCMakeProfileInfoByName(profile)
-                ?: return null to "CMake profile \"$profile\" isn't loaded. Enable it in Settings | Build, Execution, Deployment | CMake and reload the project."
+            val settingsProfile = CMakeSettings.getInstance(project).profiles.let { profiles ->
+                profiles.firstOrNull { it.name == profile } ?: profiles.firstOrNull { it.displayName == profile }
+            } ?: return null to "No CMake profile or preset is named \"$profile\". Check [commit_tests] profile in .idea/nihil_plugin.toml."
+            if (!settingsProfile.enabled) {
+                return null to "CMake profile \"$profile\" is disabled. Enable it in Settings | Build, Execution, Deployment | CMake and reload the project."
+            }
+            val info = CMakeWorkspace.getInstance(project).getCMakeProfileInfoByName(settingsProfile.name)
+                ?: return null to "CMake profile \"$profile\" isn't loaded yet. Reload the CMake project."
             val buildDir = info.generationDir
             val cmake = info.environment?.cMake?.executablePath
                 ?: return null to "CMake profile \"$profile\" has no CMake executable in its toolchain."

@@ -35,7 +35,7 @@ data class BuildTargetsConfig(
 )
 
 data class CommitTestsConfig(
-    /** CMake profile the tests are built and run with. */
+    /** CMake profile the tests are built and run with: its name, or a preset profile's display name. */
     val profile: String = "Test (release)",
     /** Library name -> test targets, replacing the `NihilTest<Name>` convention for that library. */
     val targets: Map<String, List<String>> = emptyMap(),

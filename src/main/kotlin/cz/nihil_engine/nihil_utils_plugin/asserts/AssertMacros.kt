@@ -3,6 +3,7 @@ package cz.nihil_engine.nihil_utils_plugin.asserts
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import cz.nihil_engine.nihil_utils_plugin.project.NihilEngineDir
 import java.io.File
 
 enum class AssertKind(val macro: String, val typeName: String, val fatal: Boolean) {
@@ -61,7 +62,7 @@ class AssertMacroService(private val project: Project) {
 
     val macros: AssertMacros
         get() {
-            val file = File(project.basePath ?: "", NAMES_FILE)
+            val file = File(NihilEngineDir.of(project), NAMES_FILE)
             val stamp = file.lastModified() // 0 when missing
             cached?.takeIf { it.stamp == stamp }?.let { return it.macros }
             val macros = load(file)

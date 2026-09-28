@@ -26,14 +26,16 @@ import kotlinx.coroutines.withContext
 
 class DuplicateAssertIdCheckinHandlerFactory : CheckinHandlerFactory() {
     override fun createHandler(panel: CheckinProjectPanel, commitContext: CommitContext): CheckinHandler =
-        DuplicateAssertIdCheckinHandler(panel.project)
+        DuplicateAssertIdCheckinHandler(panel)
 }
 
 /**
- * Blocks a commit whose files use an assert ID that another assert already uses. Only the committed files are
- * parsed: every other file is looked up in [AssertIdIndex].
+ * Blocks a commit whose files use an assert ID that another assert already uses, and records the outcome as a trailer
+ * in the commit message. Only the committed files are parsed: every other file is looked up in [AssertIdIndex].
  */
-class DuplicateAssertIdCheckinHandler(private val project: Project) : CheckinHandler(), CommitCheck {
+class DuplicateAssertIdCheckinHandler(private val panel: CheckinProjectPanel) : CheckinHandler(), CommitCheck {
+
+    private val project: Project = panel.project
 
     override fun getExecutionOrder() = CommitCheck.ExecutionOrder.EARLY
 
@@ -66,7 +68,10 @@ class DuplicateAssertIdCheckinHandler(private val project: Project) : CheckinHan
                 line
             )
         }
-        if (occurrences.isEmpty()) return null
+        if (occurrences.isEmpty()) {
+            panel.setTrailers(OWNED_KEYS, emptyList())
+            return null
+        }
 
         val elsewhere = smartReadAction(project) {
             occurrences.keys.associateWith { id ->
@@ -80,6 +85,8 @@ class DuplicateAssertIdCheckinHandler(private val project: Project) : CheckinHan
         }
 
         val duplicates = occurrences.filterValues { it.size > 1 }.toSortedMap()
+        // A blocked commit can still go ahead with "Commit Anyway": the duplicate trailer records that
+        panel.setTrailers(OWNED_KEYS, trailers(occurrences.size, duplicates.keys))
         if (duplicates.isEmpty()) return null
         return DuplicatesProblem(project, duplicates)
     }
@@ -117,6 +124,21 @@ class DuplicateAssertIdCheckinHandler(private val project: Project) : CheckinHan
 
         companion object {
             private const val MAX_LISTED = 5
+        }
+    }
+
+    companion object {
+        const val UNIQUE = "Assert-IDs-Unique"
+        const val DUPLICATE = "Assert-IDs-Duplicate"
+        private val OWNED_KEYS = setOf(UNIQUE, DUPLICATE)
+        private const val MAX_TRAILER_IDS = 5
+
+        /** [checked] is how many IDs the committed files use; [duplicates] the ones that some other assert uses too. */
+        fun trailers(checked: Int, duplicates: Collection<Long>): List<String> {
+            if (duplicates.isEmpty()) return listOf("$UNIQUE: $checked checked")
+            val sorted = duplicates.sorted()
+            val more = if (sorted.size > MAX_TRAILER_IDS) " and ${sorted.size - MAX_TRAILER_IDS} more" else ""
+            return listOf("$DUPLICATE: ${sorted.take(MAX_TRAILER_IDS).joinToString { AssertSite.formatId(it) }}$more")
         }
     }
 }

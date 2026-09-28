@@ -103,6 +103,33 @@ class BuildTargetGridTest {
         assertEquals("Release", g.expectedProfileName("Release", "Game"))
     }
 
+    private fun preset(name: String, displayName: String, target: String? = null) = ProfileInfo(
+        name, true, "--preset $name", displayName,
+        presetCacheVariables = listOfNotNull(target?.let { "NIHIL_BUILD_TARGET" to it }).toMap(),
+    )
+
+    @Test
+    fun `preset profiles use the display name and the preset's cache variables`() {
+        val g = grid(
+            preset("debug", "Debug", "Game"),
+            preset("debug-editor", "Debug Editor", "Editor"),
+            preset("debug-tools", "Debug Tools", "Tools"),
+            preset("test-debug", "Test (debug)"),
+        )
+        assertEquals(emptyList<GridWarning>(), g.warnings)
+        assertEquals(listOf("Debug", "Test (debug)"), g.variants)
+        assertEquals(GridEntry("debug-editor", "Debug", "Editor", true, "Debug Editor"), g.entryForProfile("debug-editor"))
+        assertEquals("Tools", g.entryForProfile("debug-tools")!!.target)
+        assertEquals("Test (debug)", g.displayName("test-debug"))
+    }
+
+    @Test
+    fun `preset whose display name disagrees with its cache variable warns under the display name`() {
+        val g = grid(preset("profiling-editor", "Profiling Editor", "Game"))
+        assertEquals("Profiling Editor", g.entryForProfile("profiling-editor")!!.variant)
+        assertEquals("Profiling Editor", g.warnings.single().displayName)
+    }
+
     @Test
     fun `custom name pattern`() {
         val g = BuildTargetGrid.build(

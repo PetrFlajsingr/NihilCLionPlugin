@@ -7,9 +7,14 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.jetbrains.cidr.cpp.cmake.CMakeSettings
+import com.jetbrains.cidr.cpp.cmake.presets.CMakePresetLoader
+import com.jetbrains.cidr.cpp.cmake.presets.ConfigurePreset
+import com.jetbrains.cidr.cpp.cmake.presets.Schema
 import com.jetbrains.cidr.cpp.execution.CMakeBuildProfileExecutionTarget
 import cz.nihil_engine.nihil_utils_plugin.project.NihilProjectConfigService
 
@@ -37,10 +42,58 @@ class BuildTargetService(private val project: Project) {
      */
     fun grid(): BuildTargetGrid {
         val config = NihilProjectConfigService.getInstance(project).config.buildTargets
-        val profiles = CMakeSettings.getInstance(project).profiles.map {
-            ProfileInfo(name = it.name, enabled = it.enabled, generationOptions = it.generationOptions.orEmpty())
+        val cmakeProfiles = CMakeSettings.getInstance(project).profiles
+        val presets = if (cmakeProfiles.any { it.fromPreset }) presetSchema()?.configurePresetsMap.orEmpty() else emptyMap()
+        val profiles = cmakeProfiles.map {
+            ProfileInfo(
+                name = it.name,
+                enabled = it.enabled,
+                generationOptions = it.generationOptions.orEmpty(),
+                displayName = it.displayName,
+                presetCacheVariables = if (it.fromPreset) cacheVariablesOf(presets[it.name]) else emptyMap(),
+            )
         }
         return BuildTargetGrid.build(profiles, config) { CMakeSettings.getOptionsList(it) }
+    }
+
+    @Volatile
+    private var cachedSchema: Schema? = null
+
+    /** The project's CMake presets, parsed by CLion's loader; re-parsed only when a preset file changed. */
+    private fun presetSchema(): Schema? {
+        cachedSchema?.takeIf { it.isUpToDate(project) }?.let { return it }
+        return try {
+            project.service<CMakePresetLoader>().loadProjectSchema().also { cachedSchema = it }
+        } catch (e: ProcessCanceledException) {
+            throw e
+        } catch (e: Exception) {
+            log.debug("CMake presets not loaded: ${e.message}")
+            null
+        }
+    }
+
+    private fun cacheVariablesOf(preset: ConfigurePreset<*>?): Map<String, String> =
+        runCatching { preset?.cacheVariables.orEmpty().mapValues { (_, v) -> v.value.toString() } }
+            .getOrDefault(emptyMap())
+
+    /**
+     * Flips a profile's enabled flag the way CLion's CMake settings do; CLion then reloads the CMake project.
+     * Refuses to disable the last enabled profile.
+     */
+    fun toggleEnabled(profileName: String) {
+        val settings = CMakeSettings.getInstance(project)
+        val profile = settings.profiles.firstOrNull { it.name == profileName } ?: return
+        if (profile.enabled && settings.activeProfiles.size <= 1) return
+        settings.profiles = CMakeSettings.toggleProfileInList(profile, settings.profiles)
+    }
+
+    fun isEnabled(profileName: String): Boolean =
+        CMakeSettings.getInstance(project).profiles.firstOrNull { it.name == profileName }?.enabled == true
+
+    fun canToggle(profileName: String): Boolean {
+        val settings = CMakeSettings.getInstance(project)
+        val profile = settings.profiles.firstOrNull { it.name == profileName } ?: return false
+        return !profile.enabled || settings.activeProfiles.size > 1
     }
 
     fun current(): BuildTargetState {
@@ -55,8 +108,8 @@ class BuildTargetService(private val project: Project) {
     }
 
     /**
-     * Selects [entry]'s profile. When the selected run configuration can't run with that profile, switches to
-     * the run configuration last used with the entry's target, or else to the first one that can.
+     * Selects [entry]'s profile together with a run configuration that can run with it, first of: the one last
+     * used with this profile, the selected one, the one last used with the entry's target, the first that can.
      */
     fun select(entry: GridEntry) {
         if (!entry.enabled) return
@@ -71,15 +124,13 @@ class BuildTargetService(private val project: Project) {
             }
 
         val current = runManager.selectedConfiguration
-        var settings = current
-        var target = profileTargetFor(current)
-        if (target == null) {
-            val candidates = listOfNotNull(memory.get(entry.target)) + runManager.allSettings
-            for (candidate in candidates) {
-                target = profileTargetFor(candidate) ?: continue
-                settings = candidate
-                break
-            }
+        var settings: RunnerAndConfigurationSettings? = null
+        var target: ExecutionTarget? = null
+        val candidates = listOfNotNull(memory.forProfile(entry), current, memory.forTarget(entry)) + runManager.allSettings
+        for (candidate in candidates) {
+            target = profileTargetFor(candidate) ?: continue
+            settings = candidate
+            break
         }
 
         if (settings == null || target == null) {
@@ -87,7 +138,7 @@ class BuildTargetService(private val project: Project) {
             NotificationGroupManager.getInstance()
                 .getNotificationGroup(NOTIFICATION_GROUP)
                 .createNotification(
-                    "No run configuration for \"${entry.profileName}\"",
+                    "No run configuration for \"${entry.displayName}\"",
                     "None of the run configurations can run with this profile. Reload the CMake project if the profile was just added.",
                     NotificationType.WARNING,
                 )
@@ -99,7 +150,7 @@ class BuildTargetService(private val project: Project) {
             if (settings !== current) runManager.selectedConfiguration = settings
             etm.activeTarget = target
         }
-        memory.record(entry.target, settings)
+        memory.record(entry, settings)
     }
 
     companion object {

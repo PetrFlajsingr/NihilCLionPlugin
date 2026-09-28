@@ -7,7 +7,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.KeepPopupOnPerform
 import com.intellij.openapi.actionSystem.Separator
+import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.project.DumbAware
@@ -49,7 +51,39 @@ abstract class BuildTargetComboBase : ComboBoxAction(), DumbAware {
         if (warnings.isEmpty() && problems.isEmpty()) return
         group.add(Separator.create("Warnings"))
         problems.forEach { group.add(InfoAction(it, AllIcons.General.Warning)) }
-        warnings.forEach { group.add(InfoAction("${it.profileName}: ${it.message}", AllIcons.General.Warning)) }
+        warnings.forEach { group.add(InfoAction("${it.displayName}: ${it.message}", AllIcons.General.Warning)) }
+    }
+
+    /** Submenu with a checkbox per CMake profile; toggling enables or disables it like CLion's CMake settings. */
+    protected fun addProfileToggles(group: DefaultActionGroup, grid: BuildTargetGrid) {
+        if (grid.profiles.isEmpty()) return
+        group.add(Separator.create())
+        group.add(DefaultActionGroup("Enable / Disable Profiles", true).apply {
+            grid.profiles.forEach { add(ProfileToggleAction(it.name, it.displayName)) }
+        })
+    }
+
+    private class ProfileToggleAction(private val profileName: String, private val label: String) : ToggleAction(), DumbAware {
+        override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            e.presentation.setText(label, false)
+            e.presentation.putClientProperty(ActionUtil.SECONDARY_TEXT, profileName.takeIf { it != label })
+            e.presentation.keepPopupOnPerform = KeepPopupOnPerform.Always
+            val project = e.project ?: return
+            e.presentation.isEnabled = BuildTargetService.getInstance(project).canToggle(profileName)
+        }
+
+        override fun isSelected(e: AnActionEvent): Boolean {
+            val project = e.project ?: return false
+            return BuildTargetService.getInstance(project).isEnabled(profileName)
+        }
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+            val project = e.project ?: return
+            if (isSelected(e) != state) BuildTargetService.getInstance(project).toggleEnabled(profileName)
+        }
     }
 
     protected class ChoiceAction(
@@ -91,13 +125,13 @@ class BuildVariantComboAction : BuildTargetComboBase() {
     override fun update(e: AnActionEvent, state: BuildTargetState) {
         val p = e.presentation
         p.isEnabled = state.grid.variants.isNotEmpty()
-        p.setText(state.entry?.variant ?: state.profileName ?: "No CMake profile", false)
+        p.setText(state.entry?.variant ?: state.profileName?.let(state.grid::displayName) ?: "No CMake profile", false)
         val hasWarning = state.profileName != null &&
             (state.entry == null || state.grid.warningsFor(state.profileName).isNotEmpty())
         p.icon = if (hasWarning || state.configProblems.isNotEmpty()) AllIcons.General.Warning else null
         p.description = when {
             state.profileName == null -> "Build variant"
-            else -> "Build variant (profile \"${state.profileName}\")"
+            else -> "Build variant (profile \"${state.grid.displayName(state.profileName)}\")"
         }
     }
 
@@ -123,6 +157,7 @@ class BuildVariantComboAction : BuildTargetComboBase() {
                 group.add(ChoiceAction(it, "disabled profile", selected = false, isChoosable = false) {})
             }
         }
+        addProfileToggles(group, grid)
         addWarnings(group, grid.warnings, state.configProblems)
     }
 }
@@ -145,8 +180,8 @@ class BuildTargetComboAction : BuildTargetComboBase() {
             val entry = grid.entry(variant, target)
             val secondary = when {
                 entry == null -> "no \"${grid.expectedProfileName(variant, target)}\" profile"
-                !entry.enabled -> "\"${entry.profileName}\" is disabled"
-                else -> entry.profileName
+                !entry.enabled -> "\"${entry.displayName}\" is disabled"
+                else -> entry.displayName
             }
             group.add(ChoiceAction(
                 label = target,

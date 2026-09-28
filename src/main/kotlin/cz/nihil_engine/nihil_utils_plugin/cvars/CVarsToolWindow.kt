@@ -161,8 +161,9 @@ private class CVarsPanel(private val project: Project, private val toolWindow: T
             model.fireTableDataChanged()
             TableFit.fit(table, maxWidth = 600)
             selected?.let(::select)
-        } else {
-            model.fireTableRowsUpdated(0, maxOf(0, model.rowCount - 1))
+        } else if (model.rowCount > 0) {
+            // Never with an empty model: rows 0..0 would name a row the sorter doesn't have.
+            model.fireTableRowsUpdated(0, model.rowCount - 1)
         }
         val lines = live.output
         if (lines.size != shownOutput) {

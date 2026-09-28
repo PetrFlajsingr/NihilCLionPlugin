@@ -4,19 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Add CVar visualization">
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Minor fixes">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/project/NihilToolWindowsAvailability.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/asserts/IgnoredAssertsToolWindow.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/asserts/IgnoredAssertsToolWindow.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetComboActions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetComboActions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetGrid.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetGrid.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/LastRunConfigPerTarget.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/LastRunConfigPerTarget.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/CommitTrailers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/CommitTrailers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/DuplicateAssertIdCheckinHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/DuplicateAssertIdCheckinHandler.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/NihilTestsCheckinHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/NihilTestsCheckinHandler.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/TestSelection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/TestSelection.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/cvars/CVarsToolWindow.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/cvars/CVarsToolWindow.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/feature_flags/FeatureFlagsToolWindow.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/feature_flags/FeatureFlagsToolWindow.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/nihil_templates/app/template.toml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/nihil_templates/app/template.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/TestSelectionTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/TestSelectionTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/scaffold/CMakeRegistrationTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/scaffold/CMakeRegistrationTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetGridTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/build_targets/BuildTargetGridTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/CommitCheckParsingTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/CommitCheckParsingTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,23 +103,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0646527355774449" />
-      <entry key="MS500" value="1.8708779621619598" />
-      <entry key="S2" value="3.087420739831823" />
-      <entry key="S5" value="3.5830004446513453" />
-      <entry key="S10" value="3.7815711212029623" />
-      <entry key="S30" value="3.9248506038759325" />
-      <entry key="S60" value="3.9635668529842953" />
-      <entry key="M2" value="4.178314434329208" />
-      <entry key="M5" value="7.974069845662542" />
-      <entry key="M10" value="17.284349062527742" />
-      <entry key="M15" value="26.83072639494138" />
-      <entry key="M30" value="51.7742655787139" />
-      <entry key="H1" value="81.87715099832066" />
-      <entry key="H2" value="107.2178766471629" />
-      <entry key="H4" value="124.76571307406041" />
-      <entry key="D1" value="147.14327270658845" />
-      <entry key="W1" value="152.9338377698365" />
+      <entry key="MS100" value="1.0000004890545595" />
+      <entry key="MS500" value="1.1104882830410165" />
+      <entry key="S2" value="2.29236938532759" />
+      <entry key="S5" value="3.138845028634895" />
+      <entry key="S10" value="3.5324459661065806" />
+      <entry key="S30" value="3.83510784803617" />
+      <entry key="S60" value="3.916368083097457" />
+      <entry key="M2" value="3.9584073334613077" />
+      <entry key="M5" value="4.202393454911997" />
+      <entry key="M10" value="6.857983215685386" />
+      <entry key="M15" value="12.093270623419288" />
+      <entry key="M30" value="32.44252586240574" />
+      <entry key="H1" value="64.68778584665529" />
+      <entry key="H2" value="96.30776156713587" />
+      <entry key="H4" value="119.76601894437573" />
+      <entry key="D1" value="149.31867536127763" />
+      <entry key="W1" value="156.6614728584884" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -141,23 +141,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9830671859012413" />
-      <entry key="MS500" value="1.848873682199338" />
-      <entry key="S2" value="3.0797243981063365" />
-      <entry key="S5" value="3.579561232292317" />
-      <entry key="S10" value="3.7797791958620843" />
-      <entry key="S30" value="3.9242358973624705" />
-      <entry key="S60" value="3.963256087828022" />
-      <entry key="M2" value="4.178079716544799" />
-      <entry key="M5" value="7.9732097633506" />
-      <entry key="M10" value="17.282237886488495" />
-      <entry key="M15" value="26.82788671195354" />
-      <entry key="M30" value="51.77105307856866" />
-      <entry key="H1" value="81.87458845348898" />
-      <entry key="H2" value="107.21622606037934" />
-      <entry key="H4" value="124.76476599199916" />
-      <entry key="D1" value="147.14308988849777" />
-      <entry key="W1" value="152.93381074574486" />
+      <entry key="MS100" value="0.9526384642665652" />
+      <entry key="MS500" value="1.0996685484113495" />
+      <entry key="S2" value="2.2865144852337056" />
+      <entry key="S5" value="3.1356020579174606" />
+      <entry key="S10" value="3.5306151245816717" />
+      <entry key="S30" value="3.8344439217728983" />
+      <entry key="S60" value="3.9160289195664646" />
+      <entry key="M2" value="3.958235883033872" />
+      <entry key="M5" value="4.202300784939225" />
+      <entry key="M10" value="6.85759851367088" />
+      <entry key="M15" value="12.092390386539982" />
+      <entry key="M30" value="32.440749335289254" />
+      <entry key="H1" value="64.68588065622384" />
+      <entry key="H2" value="96.30633761859032" />
+      <entry key="H4" value="119.76513873133972" />
+      <entry key="D1" value="149.31849456941134" />
+      <entry key="W1" value="156.66144584814117" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -208,7 +208,7 @@
       <recent name="cz.nihil_engine.nihil_utils_plugin.args" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Run IDE with Plugin">
+  <component name="RunManager" selected="Gradle.pf_assert_integration [assemble]">
     <configuration name="pf_assert_integration [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -506,7 +506,15 @@
       <option name="project" value="LOCAL" />
       <updated>1790528082652</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Minor fixes">
+      <option name="closed" value="true" />
+      <created>1790529644989</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1790529644989</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -527,7 +535,8 @@
     <MESSAGE value="Make ignored assert markers react to build target" />
     <MESSAGE value="Add commit checks&#10;Add project settings" />
     <MESSAGE value="Add CVar visualization" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add CVar visualization" />
+    <MESSAGE value="Minor fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor fixes" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -1,5 +1,10 @@
 package cz.nihil_engine.nihil_utils_plugin.commit_checks
 
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.vcs.CheckinProjectPanel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 /**
  * Adds git trailers (`Key: value` lines in the message's last paragraph) so `git log --format=%(trailers)` can
  * read them. Git only treats the last paragraph as trailers, so new lines join an existing trailer paragraph
@@ -23,5 +28,14 @@ object CommitTrailers {
         val joinsTrailers = lastParagraph != body && lastParagraph.lines().all { TRAILER.matches(it) }
         val separator = if (joinsTrailers) "\n" else "\n\n"
         return body + separator + lines.joinToString("\n")
+    }
+}
+
+/** Replaces a check's trailers ([ownedKeys]) in the commit message with [lines]. */
+suspend fun CheckinProjectPanel.setTrailers(ownedKeys: Set<String>, lines: List<String>) {
+    withContext(Dispatchers.EDT) {
+        val current = commitMessage
+        val updated = CommitTrailers.apply(current, ownedKeys, lines)
+        if (updated != current.trimEnd()) setCommitMessage(updated)
     }
 }

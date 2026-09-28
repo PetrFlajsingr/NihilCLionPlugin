@@ -70,6 +70,25 @@ class CommitCheckParsingTest {
     }
 
     @Test
+    fun `assert ID trailers`() {
+        assertEquals(listOf("Assert-IDs-Unique: 3 checked"), DuplicateAssertIdCheckinHandler.trailers(3, emptyList()))
+        assertEquals(listOf("Assert-IDs-Duplicate: 0x2, 0xAB"), DuplicateAssertIdCheckinHandler.trailers(3, listOf(0xABL, 0x2L)))
+        assertEquals(
+            listOf("Assert-IDs-Duplicate: 0x1, 0x2, 0x3, 0x4, 0x5 and 2 more"),
+            DuplicateAssertIdCheckinHandler.trailers(9, (1L..7L).toList()),
+        )
+
+        // Each check owns its keys: rerunning one leaves the other's trailers alone
+        val keys = setOf(DuplicateAssertIdCheckinHandler.UNIQUE, DuplicateAssertIdCheckinHandler.DUPLICATE)
+        val withTests = CommitTrailers.apply("Fix vector", setOf("Tests-Passed"), listOf("Tests-Passed: NihilCommon"))
+        val duplicate = CommitTrailers.apply(withTests, keys, listOf("Assert-IDs-Duplicate: 0x2"))
+        assertEquals(
+            "Fix vector\n\nTests-Passed: NihilCommon\nAssert-IDs-Unique: 3 checked",
+            CommitTrailers.apply(duplicate, keys, DuplicateAssertIdCheckinHandler.trailers(3, emptyList())),
+        )
+    }
+
+    @Test
     fun `input hash follows content`() {
         val dir = tmp.newFolder("lib")
         val file = File(dir, "a.cpp").apply { writeText("int a;") }

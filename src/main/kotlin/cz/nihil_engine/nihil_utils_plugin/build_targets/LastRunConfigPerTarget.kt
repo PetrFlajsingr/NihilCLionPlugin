@@ -14,8 +14,9 @@ import cz.nihil_engine.nihil_utils_plugin.project.NihilFeature
 import cz.nihil_engine.nihil_utils_plugin.project.NihilProjectConfigService
 
 /**
- * Workspace-level memory of the last run configuration used with each build target.
- * Stored in the project's PropertiesComponent (workspace.xml), keyed by target name.
+ * Workspace-level memory of the last run configuration used with each (variant, target) pair, i.e. each profile,
+ * and with each build target as the fallback for a pair not used yet.
+ * Stored in the project's PropertiesComponent (workspace.xml).
  */
 @Service(Service.Level.PROJECT)
 class LastRunConfigPerTarget(private val project: Project) {
@@ -24,13 +25,21 @@ class LastRunConfigPerTarget(private val project: Project) {
     @Volatile
     private var suspended = false
 
-    fun get(target: String): RunnerAndConfigurationSettings? {
-        val id = PropertiesComponent.getInstance(project).getValue(key(target)) ?: return null
-        return RunManager.getInstance(project).allSettings.firstOrNull { it.uniqueID == id }
+    /** Last run configuration used with [entry]'s profile. */
+    fun forProfile(entry: GridEntry): RunnerAndConfigurationSettings? = find(profileKey(entry.profileName))
+
+    /** Last run configuration used with any profile of [entry]'s target. */
+    fun forTarget(entry: GridEntry): RunnerAndConfigurationSettings? = find(targetKey(entry.target))
+
+    fun record(entry: GridEntry, settings: RunnerAndConfigurationSettings) {
+        val props = PropertiesComponent.getInstance(project)
+        props.setValue(profileKey(entry.profileName), settings.uniqueID)
+        props.setValue(targetKey(entry.target), settings.uniqueID)
     }
 
-    fun record(target: String, settings: RunnerAndConfigurationSettings) {
-        PropertiesComponent.getInstance(project).setValue(key(target), settings.uniqueID)
+    private fun find(key: String): RunnerAndConfigurationSettings? {
+        val id = PropertiesComponent.getInstance(project).getValue(key) ?: return null
+        return RunManager.getInstance(project).allSettings.firstOrNull { it.uniqueID == id }
     }
 
     fun <T> withoutRecording(block: () -> T): T {
@@ -42,7 +51,7 @@ class LastRunConfigPerTarget(private val project: Project) {
         }
     }
 
-    /** Records the selected run configuration under the active profile's target, if it can run there. */
+    /** Records the selected run configuration under the active profile and its target, if it can run there. */
     fun recordCurrent() {
         if (suspended || !NihilProjectConfigService.isEnabled(project, NihilFeature.BUILD_TARGET_SELECTOR)) return
         val settings = RunManager.getInstance(project).selectedConfiguration ?: return
@@ -52,10 +61,13 @@ class LastRunConfigPerTarget(private val project: Project) {
         // configuration supports; recording then would file it under the old target.
         if (etm.getTargetsFor(settings.configuration).none { it.id == active.id }) return
         val entry = BuildTargetService.getInstance(project).current().entry ?: return
-        record(entry.target, settings)
+        record(entry, settings)
     }
 
-    private fun key(target: String) = "nihil.buildTargets.lastRunConfig.$target"
+    // The target key predates per-profile memory; keeping it keeps what users already have recorded.
+    private fun targetKey(target: String) = "nihil.buildTargets.lastRunConfig.$target"
+
+    private fun profileKey(profileName: String) = "nihil.buildTargets.lastRunConfig.profile.$profileName"
 
     companion object {
         fun getInstance(project: Project): LastRunConfigPerTarget =

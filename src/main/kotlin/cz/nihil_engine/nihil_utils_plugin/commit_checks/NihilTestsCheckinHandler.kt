@@ -180,13 +180,7 @@ class NihilTestsCheckinHandler(private val panel: CheckinProjectPanel) : Checkin
         return selection.filter { lib -> local.any { file -> lib.inputs.any { file.startsWith(it) } } }.map { it.library }.toSet()
     }
 
-    private suspend fun setTrailers(lines: List<String>) {
-        withContext(Dispatchers.EDT) {
-            val current = panel.commitMessage
-            val updated = CommitTrailers.apply(current, OWNED_KEYS, lines)
-            if (updated != current.trimEnd()) panel.setCommitMessage(updated)
-        }
-    }
+    private suspend fun setTrailers(lines: List<String>) = panel.setTrailers(OWNED_KEYS, lines)
 
     private class TextProblem(override val text: String) : CommitProblem
 

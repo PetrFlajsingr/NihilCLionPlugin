@@ -8,6 +8,7 @@ import com.intellij.openapi.startup.ProjectActivity
 import cz.nihil_engine.nihil_utils_plugin.asserts.IgnoredAssertGutter
 import cz.nihil_engine.nihil_utils_plugin.cvars.CVarGutter
 import cz.nihil_engine.nihil_utils_plugin.feature_flags.FeatureFlagLens
+import cz.nihil_engine.nihil_utils_plugin.root_exclusion.RootExclusionService
 
 class MainActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
@@ -15,6 +16,7 @@ class MainActivity : ProjectActivity {
         IgnoredAssertGutter.getInstance(project).start()
         FeatureFlagLens.getInstance(project).start()
         CVarGutter.getInstance(project).start()
+        RootExclusionService.getInstance(project).update()
     }
 
     private fun logExecutionTargetsRegistration() {

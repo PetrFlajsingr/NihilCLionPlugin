@@ -184,6 +184,7 @@ class NihilProjectSettingsConfigurable(private val project: Project) : Configura
             NihilFeature.COMMIT_ASSERT_IDS to ("Commit assert ID check" to "Block commits that duplicate an assert ID"),
             NihilFeature.FEATURE_FLAGS to ("Feature flags" to "Values of NIHIL_IS_ENABLED flags in every build type, inline and in a matrix tool window"),
             NihilFeature.CVARS to ("Console variables" to "Go to cvar, console links, and live values of a running app over its console control port"),
+            NihilFeature.ENGINE_ROOT_EXCLUSION to ("Engine root exclusion" to "Exclude engine/ while the selected profile builds against a linked engine checkout, and disabled profiles' build dirs"),
         )
     }
 }

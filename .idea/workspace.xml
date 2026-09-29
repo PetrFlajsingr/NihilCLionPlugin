@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Fix for appending commit info with duplicate id checks">
+    <list default="true" id="8f45fdcf-13c1-48b3-8f01-2f4969d43860" name="Changes" comment="Fix for locating tools based on NIHIL_ENGINE_DIR">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/asserts/AssertMacros.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/asserts/AssertMacros.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/base_actions/RunToolAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/TestRunner.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/commit_checks/TestRunner.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/activities/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/activities/MainActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/project/NihilProjectConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/project/NihilProjectConfig.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/project/NihilProjectConfigParser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/project/NihilProjectConfigParser.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/settings/NihilProjectSettingsConfigurable.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/cz/nihil_engine/nihil_utils_plugin/settings/NihilProjectSettingsConfigurable.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,23 +96,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.117088991426561" />
-      <entry key="MS500" value="2.4874616417259423" />
-      <entry key="S2" value="6.1324456244451575" />
-      <entry key="S5" value="11.019636481676482" />
-      <entry key="S10" value="14.737190204200088" />
-      <entry key="S30" value="18.521800010746116" />
-      <entry key="S60" value="19.70301689766579" />
-      <entry key="M2" value="20.336741051906937" />
-      <entry key="M5" value="20.94527735944693" />
-      <entry key="M10" value="23.699881562254188" />
-      <entry key="M15" value="28.949531804933393" />
-      <entry key="M30" value="49.29620429649582" />
-      <entry key="H1" value="81.55561065523678" />
-      <entry key="H2" value="113.21272725062902" />
-      <entry key="H4" value="136.70776203348197" />
-      <entry key="D1" value="166.30671087238917" />
-      <entry key="W1" value="173.65968361127338" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.000000025959811" />
+      <entry key="S2" value="1.0734931922612394" />
+      <entry key="S5" value="3.3116568775756368" />
+      <entry key="S10" value="9.301380680426279" />
+      <entry key="S30" value="21.568811553681115" />
+      <entry key="S60" value="27.0099358616134" />
+      <entry key="M2" value="30.28535887499234" />
+      <entry key="M5" value="32.66308330617274" />
+      <entry key="M10" value="35.99532540622958" />
+      <entry key="M15" value="41.40552557082356" />
+      <entry key="M30" value="61.88184622631943" />
+      <entry key="H1" value="94.2357577758197" />
+      <entry key="H2" value="125.99750347917822" />
+      <entry key="H4" value="149.57962572837923" />
+      <entry key="D1" value="179.2810458833183" />
+      <entry key="W1" value="186.65586430288047" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -134,23 +134,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.0693652311566102" />
-      <entry key="MS500" value="2.346009467718552" />
-      <entry key="S2" value="6.023473905857568" />
-      <entry key="S5" value="10.948834161026953" />
-      <entry key="S10" value="14.692219227074988" />
-      <entry key="S30" value="18.503699368268773" />
-      <entry key="S60" value="19.693492654390003" />
-      <entry key="M2" value="20.331852872635583" />
-      <entry key="M5" value="20.943267687958286" />
-      <entry key="M10" value="23.698536701266644" />
-      <entry key="M15" value="28.94801399703768" />
-      <entry key="M30" value="49.29411172055138" />
-      <entry key="H1" value="81.55354754245379" />
-      <entry key="H2" value="113.21122386752438" />
-      <entry key="H4" value="136.7068418461047" />
-      <entry key="D1" value="166.3065233636355" />
-      <entry key="W1" value="173.65965563966697" />
+      <entry key="MS100" value="0.9526379980439373" />
+      <entry key="MS500" value="0.9903428944555345" />
+      <entry key="S2" value="1.0698821901189213" />
+      <entry key="S5" value="3.297360825194736" />
+      <entry key="S10" value="9.277621889340963" />
+      <entry key="S30" value="21.5498107452417" />
+      <entry key="S60" value="26.998010842840248" />
+      <entry key="M2" value="30.27867034402294" />
+      <entry key="M5" value="32.660193627581684" />
+      <entry key="M10" value="35.99351891927554" />
+      <entry key="M15" value="41.40370061012599" />
+      <entry key="M30" value="61.87960316915429" />
+      <entry key="H1" value="94.23361909724333" />
+      <entry key="H2" value="125.9959612820743" />
+      <entry key="H4" value="149.5786856115122" />
+      <entry key="D1" value="179.28085494450983" />
+      <entry key="W1" value="186.65583583790408" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -515,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1790592472342</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Fix for locating tools based on NIHIL_ENGINE_DIR">
+      <option name="closed" value="true" />
+      <created>1790627878926</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1790627878926</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -538,7 +546,8 @@
     <MESSAGE value="Add CVar visualization" />
     <MESSAGE value="Minor fixes" />
     <MESSAGE value="Fix for appending commit info with duplicate id checks" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix for appending commit info with duplicate id checks" />
+    <MESSAGE value="Fix for locating tools based on NIHIL_ENGINE_DIR" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix for locating tools based on NIHIL_ENGINE_DIR" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

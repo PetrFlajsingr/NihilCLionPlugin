@@ -22,6 +22,8 @@ enum class NihilFeature(val key: String) {
     FEATURE_FLAGS("feature_flags"),
     /** Console variable index and navigation, plus live values from a running app's console control server. */
     CVARS("cvars"),
+    /** Excludes engine/ while the selected profile's NIHIL_ENGINE_DIR is a linked checkout, and disabled profiles' build dirs. */
+    ENGINE_ROOT_EXCLUSION("engine_root_exclusion"),
 }
 
 data class BuildTargetsConfig(

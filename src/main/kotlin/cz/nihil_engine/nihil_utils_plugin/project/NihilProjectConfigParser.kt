@@ -12,6 +12,7 @@ import java.io.File
  * tool_buttons = true
  * args_popup = true
  * assert_menu = true
+ * engine_root_exclusion = true
  *
  * [build_targets]
  * cmake_variable = "NIHIL_BUILD_TARGET"

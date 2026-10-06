@@ -60,6 +60,9 @@ object NihilArgsConfigParser {
                         min = argTable["min"]?.toString()?.toIntOrNull(),
                         max = argTable["max"]?.toString()?.toIntOrNull(),
                         separator = argTable["separator"] as? String ?: ",",
+                        optional = argTable["optional"] == true,
+                        enabledByDefault = argTable["enabled_by_default"] == true,
+                        advanced = argTable["advanced"] == true,
                     )
                 }
 
@@ -69,12 +72,16 @@ object NihilArgsConfigParser {
                 .map { presetTableKey ->
                     val presetKey = presetTableKey.removePrefix(presetsPrefix)
                     val presetTable = tables[presetTableKey]!!
+                    val values = presetTable.filterKeys { it != "label" }.mapValues { (_, value) ->
+                        if (value is List<*>) value.joinToString("|") else value.toString()
+                    }
+                    // Optional args' on/off state lives in a [<profile>.presets.<preset>.enabled] sub-table.
+                    val enabled = tables["$presetTableKey$ENABLED_SUFFIX"].orEmpty()
+                        .entries.associate { (argKey, value) -> enabledValueKey(argKey) to value.toString() }
                     ArgPreset(
                         key = presetKey,
                         label = presetTable["label"] as? String ?: presetKey,
-                        values = presetTable.filterKeys { it != "label" }.mapValues { (_, value) ->
-                            if (value is List<*>) value.joinToString("|") else value.toString()
-                        },
+                        values = values + enabled,
                     )
                 }
 

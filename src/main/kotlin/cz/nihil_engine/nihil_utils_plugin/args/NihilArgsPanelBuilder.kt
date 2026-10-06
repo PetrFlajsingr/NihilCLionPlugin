@@ -1,5 +1,6 @@
 package cz.nihil_engine.nihil_utils_plugin.args
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
@@ -8,6 +9,7 @@ import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.Balloon.Position
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.ui.HideableDecorator
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.awt.RelativePoint
@@ -18,6 +20,7 @@ import cz.nihil_engine.nihil_utils_plugin.RunConfigTargetResolver
 import cz.nihil_engine.nihil_utils_plugin.config.RunConfigExtractor
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.datatransfer.StringSelection
 import javax.swing.Box
 import javax.swing.BoxLayout
@@ -78,9 +81,13 @@ object NihilArgsPanelBuilder {
         panel.add(createPresetBar(ctx, rebuild))
         panel.add(Box.createVerticalStrut(8))
 
-        for (arg in profile.args) {
-            if (arg.type == ArgType.DERIVED) continue
+        val (advancedArgs, basicArgs) = profile.args.filter { it.type != ArgType.DERIVED }.partition { it.advanced }
+        for (arg in basicArgs) {
             panel.add(NihilArgRowFactory.createArgRow(ctx, arg))
+            panel.add(Box.createVerticalStrut(4))
+        }
+        if (advancedArgs.isNotEmpty()) {
+            panel.add(createAdvancedSection(ctx, advancedArgs))
             panel.add(Box.createVerticalStrut(4))
         }
 
@@ -107,6 +114,44 @@ object NihilArgsPanelBuilder {
         panel.add(createActionButtons(project, service, targetName))
 
         return panel
+    }
+
+    /** Collapsible section for args marked `advanced`; its expanded state is remembered per profile. */
+    private fun createAdvancedSection(ctx: ArgsPanelContext, args: List<ArgDefinition>): JComponent {
+        val content = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            isOpaque = false
+            for (arg in args) {
+                add(NihilArgRowFactory.createArgRow(ctx, arg))
+                add(Box.createVerticalStrut(4))
+            }
+        }
+        val section = object : JPanel(BorderLayout()) {
+            override fun getMaximumSize() = Dimension(Int.MAX_VALUE, preferredSize.height)
+        }.apply {
+            isOpaque = false
+            alignmentX = Component.LEFT_ALIGNMENT
+        }
+
+        val props = PropertiesComponent.getInstance(ctx.project)
+        val expandedKey = "nihil.args.${ctx.profile.key}.advanced.expanded"
+        object : HideableDecorator(section, "Advanced (${args.size})", false) {
+            override fun on() {
+                super.on()
+                props.setValue(expandedKey, true)
+                ctx.layoutChanged()
+            }
+
+            override fun off() {
+                super.off()
+                props.setValue(expandedKey, false)
+                ctx.layoutChanged()
+            }
+        }.apply {
+            setContentComponent(content)
+            setOn(props.getBoolean(expandedKey, false))
+        }
+        return section
     }
 
     private sealed interface PresetItem {

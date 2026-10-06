@@ -57,20 +57,20 @@ internal object NihilArgRowFactory {
     fun createArgRow(ctx: ArgsPanelContext, arg: ArgDefinition): JComponent = when (arg.type) {
         ArgType.BOOL -> createBoolRow(ctx, arg)
         ArgType.SELECT -> createSelectRow(ctx, arg)
-        ArgType.TEXT -> createLabeledRow(arg.label, tooltip(arg), templateField(ctx, arg, browse = false))
-        ArgType.PATH -> createLabeledRow(arg.label, tooltip(arg), templateField(ctx, arg, browse = true))
+        ArgType.TEXT -> createArgLabeledRow(ctx, arg, tooltip(arg), templateField(ctx, arg, browse = false))
+        ArgType.PATH -> createArgLabeledRow(ctx, arg, tooltip(arg), templateField(ctx, arg, browse = true))
         ArgType.INT -> createIntRow(ctx, arg)
         ArgType.MULTI -> createMultiRow(ctx, arg)
         ArgType.DERIVED -> throw IllegalStateException("DERIVED args should not reach createArgRow")
     }
 
-    fun createLabeledRow(label: String, tooltip: String, control: JComponent): JComponent {
+    fun createLabeledRow(label: String, tooltip: String, control: JComponent): JComponent =
+        createLabeledRow(JBLabel("$label:").apply { toolTipText = tooltip }, control)
+
+    private fun createLabeledRow(label: JComponent, control: JComponent): JComponent {
         val labelCell = JPanel(BorderLayout()).apply {
             isOpaque = false
-            add(JBLabel("$label:").apply {
-                toolTipText = tooltip
-                preferredSize = Dimension(140, preferredSize.height)
-            }, BorderLayout.NORTH)
+            add(label.apply { preferredSize = Dimension(140, preferredSize.height) }, BorderLayout.NORTH)
         }
         return object : JPanel(BorderLayout(8, 0)) {
             override fun getMaximumSize() = Dimension(Int.MAX_VALUE, preferredSize.height)
@@ -79,6 +79,23 @@ internal object NihilArgRowFactory {
             alignmentX = Component.LEFT_ALIGNMENT
             add(labelCell, BorderLayout.WEST)
             add(control, BorderLayout.CENTER)
+        }
+    }
+
+    private fun createArgLabeledRow(ctx: ArgsPanelContext, arg: ArgDefinition, tooltip: String, control: JComponent): JComponent =
+        if (arg.isOptional) createLabeledRow(optionalToggle(ctx, arg, tooltip, control), control)
+        else createLabeledRow(arg.label, tooltip, control)
+
+    private fun optionalToggle(ctx: ArgsPanelContext, arg: ArgDefinition, tooltip: String, controls: JComponent): JBCheckBox {
+        val enabled = ctx.service.isEnabled(ctx.profile, arg)
+        UIUtil.setEnabled(controls, enabled, true)
+        return JBCheckBox("${arg.label}:", enabled).apply {
+            toolTipText = tooltip
+            addActionListener {
+                ctx.service.setEnabled(ctx.profile, arg, isSelected)
+                UIUtil.setEnabled(controls, isSelected, true)
+                ctx.changed()
+            }
         }
     }
 
@@ -105,7 +122,7 @@ internal object NihilArgRowFactory {
                 ctx.changed()
             }
         }
-        return createLabeledRow(arg.label, arg.flag, combo)
+        return createArgLabeledRow(ctx, arg, arg.flag, combo)
     }
 
     private fun templateField(ctx: ArgsPanelContext, arg: ArgDefinition, browse: Boolean): JComponent {
@@ -121,10 +138,12 @@ internal object NihilArgRowFactory {
             font = JBUI.Fonts.smallFont()
             border = JBUI.Borders.emptyLeft(4)
         }
-        updatePreview(preview, field.text, ctx.resolved()[arg.key])
+        fun resolvedIfEnabled(resolved: Map<String, ArgTemplates.Resolved>) =
+            resolved[arg.key]?.takeIf { ctx.service.isEnabled(ctx.profile, arg) }
+        updatePreview(preview, field.text, resolvedIfEnabled(ctx.resolved()))
         ctx.onChange { resolved ->
             val wasVisible = preview.isVisible
-            updatePreview(preview, field.text, resolved[arg.key])
+            updatePreview(preview, field.text, resolvedIfEnabled(resolved))
             if (preview.isVisible != wasVisible) ctx.layoutChanged()
         }
 
@@ -189,19 +208,15 @@ internal object NihilArgRowFactory {
                 ctx.changed()
             }
         }
-        return createLabeledRow(arg.label, arg.flag, spinner)
+        return createArgLabeledRow(ctx, arg, arg.flag, spinner)
     }
 
     private fun createMultiRow(ctx: ArgsPanelContext, arg: ArgDefinition): JComponent {
         val selected = ctx.service.getMultiValue(ctx.profile, arg).toMutableSet()
-        return JPanel().apply {
+        val options = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             isOpaque = false
             alignmentX = Component.LEFT_ALIGNMENT
-            add(JBLabel("${arg.label}:").apply {
-                toolTipText = arg.flag
-                alignmentX = Component.LEFT_ALIGNMENT
-            })
             for (option in arg.options) {
                 add(JBCheckBox(option, option in selected).apply {
                     alignmentX = Component.LEFT_ALIGNMENT
@@ -213,6 +228,15 @@ internal object NihilArgRowFactory {
                     }
                 })
             }
+        }
+        val header = if (arg.isOptional) optionalToggle(ctx, arg, arg.flag, options)
+        else JBLabel("${arg.label}:").apply { toolTipText = arg.flag }
+        return JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            isOpaque = false
+            alignmentX = Component.LEFT_ALIGNMENT
+            add(header.apply { alignmentX = Component.LEFT_ALIGNMENT })
+            add(options)
         }
     }
 }

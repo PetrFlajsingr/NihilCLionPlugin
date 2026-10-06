@@ -113,12 +113,25 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
     fun setMultiValue(profile: TargetProfile, arg: ArgDefinition, values: List<String>) =
         setValue(profile, arg, values.joinToString("|"))
 
+    /** Non-optional args are always enabled. */
+    fun isEnabled(profile: TargetProfile, arg: ArgDefinition): Boolean {
+        if (!arg.isOptional) return true
+        val props = PropertiesComponent.getInstance(project)
+        return props.getBoolean(stateKey(profile.key, enabledValueKey(arg.key)), arg.enabledByDefault)
+    }
+
+    fun setEnabled(profile: TargetProfile, arg: ArgDefinition, enabled: Boolean) {
+        val props = PropertiesComponent.getInstance(project)
+        props.setValue(stateKey(profile.key, enabledValueKey(arg.key)), enabled, arg.enabledByDefault)
+    }
+
     fun buildCommandLineArgs(targetName: String): List<String> {
         val profile = config.findProfile(targetName) ?: return emptyList()
         val resolved = resolvedValues(profile, targetName)
 
         return buildList {
             for (arg in profile.args) {
+                if (!isEnabled(profile, arg)) continue
                 when (arg.type) {
                     ArgType.BOOL -> if (getBoolValue(profile, arg)) add(arg.flag)
                     ArgType.MULTI -> {
@@ -141,14 +154,15 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
     }
 
     private fun rawValues(profile: TargetProfile): Map<String, String> =
-        profile.args.associate { arg ->
-            arg.key to when (arg.type) {
-                ArgType.BOOL -> getBoolValue(profile, arg).toString()
-                ArgType.MULTI -> getMultiValue(profile, arg).joinToString(arg.separator)
-                ArgType.DERIVED -> arg.valueTemplate
-                else -> getValue(profile, arg)
-            }
-        }
+        // A disabled optional arg is not passed, so templates referencing it see it as empty.
+        profile.args.associate { arg -> arg.key to if (isEnabled(profile, arg)) rawValue(profile, arg) else "" }
+
+    private fun rawValue(profile: TargetProfile, arg: ArgDefinition): String = when (arg.type) {
+        ArgType.BOOL -> getBoolValue(profile, arg).toString()
+        ArgType.MULTI -> getMultiValue(profile, arg).joinToString(arg.separator)
+        ArgType.DERIVED -> arg.valueTemplate
+        else -> getValue(profile, arg)
+    }
 
     fun resolvedValues(profile: TargetProfile, targetName: String?): Map<String, ArgTemplates.Resolved> =
         ArgTemplates.resolveAll(rawValues(profile), builtins(targetName))
@@ -163,19 +177,32 @@ class NihilArgsConfigService(private val project: Project) : Disposable {
         profile.presets.map { PresetChoice(it, personal = false) } +
             NihilArgsPresetStore.getInstance(project).presets(profile.key).map { PresetChoice(it, personal = true) }
 
-    fun currentValues(profile: TargetProfile): Map<String, String> =
-        profile.args.filter { it.type != ArgType.DERIVED }.associate { it.key to getValue(profile, it) }
+    fun currentValues(profile: TargetProfile): Map<String, String> = buildMap {
+        for (arg in profile.args) {
+            if (arg.type == ArgType.DERIVED) continue
+            put(arg.key, getValue(profile, arg))
+            if (arg.isOptional) put(enabledValueKey(arg.key), isEnabled(profile, arg).toString())
+        }
+    }
 
     fun applyValues(profile: TargetProfile, values: Map<String, String>) {
         for (arg in profile.args) {
-            if (arg.type != ArgType.DERIVED) setValue(profile, arg, values[arg.key] ?: arg.default)
+            if (arg.type == ArgType.DERIVED) continue
+            setValue(profile, arg, values[arg.key] ?: arg.default)
+            if (arg.isOptional) setEnabled(profile, arg, presetEnabled(arg, values))
         }
     }
 
     fun matches(profile: TargetProfile, preset: ArgPreset): Boolean =
         profile.args.filter { it.type != ArgType.DERIVED }.all { arg ->
-            normalized(arg, getValue(profile, arg)) == normalized(arg, preset.values[arg.key] ?: arg.default)
+            val enabled = isEnabled(profile, arg)
+            if (enabled != presetEnabled(arg, preset.values)) return@all false
+            // The value of a disabled arg is never passed, so it doesn't distinguish presets.
+            !enabled || normalized(arg, getValue(profile, arg)) == normalized(arg, preset.values[arg.key] ?: arg.default)
         }
+
+    private fun presetEnabled(arg: ArgDefinition, values: Map<String, String>): Boolean =
+        !arg.isOptional || (values[enabledValueKey(arg.key)]?.toBooleanStrictOrNull() ?: arg.enabledByDefault)
 
     private fun normalized(arg: ArgDefinition, value: String): String = when (arg.type) {
         ArgType.BOOL -> (value.toBooleanStrictOrNull() ?: false).toString()

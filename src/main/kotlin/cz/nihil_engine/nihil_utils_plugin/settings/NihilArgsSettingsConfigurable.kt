@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
@@ -151,6 +152,9 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
                 if (arg.key.isBlank()) {
                     throw ConfigurationException("Profile '${profile.key}' has an arg with an empty key")
                 }
+                if ('.' in arg.key) {
+                    throw ConfigurationException("Arg key '${profile.key}.${arg.key}' cannot contain '.'")
+                }
                 if (!seenArgKeys.add(arg.key)) {
                     throw ConfigurationException("Profile '${profile.key}' has duplicate arg key: ${arg.key}")
                 }
@@ -276,6 +280,9 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
             min = null,
             max = null,
             separator = ",",
+            optional = false,
+            enabledByDefault = false,
+            advanced = false,
         )
         profile.args.add(arg)
         argListModel.addElement(arg)
@@ -352,6 +359,32 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
         addLabeledRow(panel, gbc, row++, "Label:", labelField)
         addLabeledRow(panel, gbc, row++, "Type:", typeCombo)
         addLabeledRow(panel, gbc, row++, "Flag:", flagField)
+
+        if (arg.type != ArgType.DERIVED) {
+            val advancedBox = JBCheckBox("Hide in the collapsed Advanced section", arg.advanced).apply {
+                addActionListener {
+                    arg.advanced = isSelected
+                    argList.repaint()
+                }
+            }
+            addLabeledRow(panel, gbc, row++, "Advanced:", advancedBox)
+        }
+
+        if (arg.type.canBeOptional) {
+            val enabledByDefaultBox = JBCheckBox("Enabled by default", arg.enabledByDefault).apply {
+                isEnabled = arg.optional
+                addActionListener { arg.enabledByDefault = isSelected }
+            }
+            val optionalBox = JBCheckBox("Only pass when switched on in the args panel", arg.optional).apply {
+                addActionListener {
+                    arg.optional = isSelected
+                    enabledByDefaultBox.isEnabled = isSelected
+                    argList.repaint()
+                }
+            }
+            addLabeledRow(panel, gbc, row++, "Optional:", optionalBox)
+            addLabeledRow(panel, gbc, row++, "", enabledByDefaultBox)
+        }
 
         // Type-specific fields
         when (arg.type) {
@@ -519,7 +552,14 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
         ): Component {
             val c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus) as JLabel
             val arg = value as? WorkingArg
-            c.text = arg?.let { "${it.key}  [${it.type.name.lowercase()}]" } ?: ""
+            c.text = arg?.let { a ->
+                val tags = listOfNotNull(
+                    a.type.name.lowercase(),
+                    if (a.optional && a.type.canBeOptional) "optional" else null,
+                    if (a.advanced && a.type != ArgType.DERIVED) "advanced" else null,
+                )
+                "${a.key}  [${tags.joinToString(", ")}]"
+            } ?: ""
             return c
         }
     }
@@ -569,6 +609,9 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
         var min: Int?,
         var max: Int?,
         var separator: String,
+        var optional: Boolean,
+        var enabledByDefault: Boolean,
+        var advanced: Boolean,
     ) {
         fun toArg(): ArgDefinition = ArgDefinition(
             key = key,
@@ -583,6 +626,9 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
             min = min,
             max = max,
             separator = separator,
+            optional = optional,
+            enabledByDefault = enabledByDefault,
+            advanced = advanced,
         )
 
         companion object {
@@ -599,6 +645,9 @@ class NihilArgsSettingsConfigurable(private val project: Project) : Configurable
                 min = a.min,
                 max = a.max,
                 separator = a.separator,
+                optional = a.optional,
+                enabledByDefault = a.enabledByDefault,
+                advanced = a.advanced,
             )
         }
     }

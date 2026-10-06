@@ -49,6 +49,15 @@ object NihilArgsConfigWriter {
                 if (arg.type == ArgType.MULTI && arg.separator != ",") {
                     append("separator = ").append(quote(arg.separator)).append('\n')
                 }
+
+                if (arg.isOptional) {
+                    append("optional = true").append('\n')
+                    if (arg.enabledByDefault) append("enabled_by_default = true").append('\n')
+                }
+
+                if (arg.advanced && arg.type != ArgType.DERIVED) {
+                    append("advanced = true").append('\n')
+                }
             }
 
             val argsByKey = profile.args.associateBy { it.key }
@@ -56,8 +65,18 @@ object NihilArgsConfigWriter {
                 append('\n')
                 append('[').append(profile.key).append(".presets.").append(key).append(']').append('\n')
                 append("label = ").append(quote(label)).append('\n')
-                for ((argKey, value) in values) {
+                val (enabled, argValues) = values.entries.partition { it.key.endsWith(ENABLED_SUFFIX) }
+                for ((argKey, value) in argValues) {
                     append(argKey).append(" = ").append(presetValueLiteral(argsByKey[argKey], value)).append('\n')
+                }
+                // Optional args' on/off state goes into a sub-table so it can't clash with value keys.
+                if (enabled.isNotEmpty()) {
+                    append('\n')
+                    append('[').append(profile.key).append(".presets.").append(key).append(ENABLED_SUFFIX).append(']').append('\n')
+                    for ((enabledKey, value) in enabled) {
+                        append(enabledKey.removeSuffix(ENABLED_SUFFIX)).append(" = ")
+                            .append(if (value.equals("true", ignoreCase = true)) "true" else "false").append('\n')
+                    }
                 }
             }
         }
